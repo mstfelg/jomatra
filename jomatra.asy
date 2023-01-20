@@ -2,6 +2,7 @@ import graph;
 import math;
 
 include style;
+include "./modules/bitmanip";
 
 // Polar coordinates
 pair pol(real r, real theta) { return r*dir(theta); }
@@ -134,6 +135,8 @@ pair incenter(pair A, pair B, pair C) {
 	};
 	return bary(A,B,C,f);
 }
+
+pair incenter(pair[] tABC) { return incenter(tABC[0], tABC[1], tABC[2]); }
 
 pair symmedian(pair A, pair B, pair C) {
 	real[] ang = angles_sss(A,B,C);
