@@ -21,11 +21,19 @@ pair perp(pair A, pair B, pair O=(0,0)) {
 	return (0,1)*(B-A)+O;
 }
 
+// Paths
+pair waypoint(path p, real r) {
+	return point(p,reltime(p,r));
+}
+pair midpoint(pair A, pair B){ return (A+B)/2;}
+pair midpoint(path p){ return waypoint(p,.5);}
+
+
 // TODO
 pair bisect(pair A, pair O, pair B) {
 	return (0,0);
 }
-
+// Perpendicular bisector
 pair bisect(pair A, pair B) { return bisect(A, (A+B)/2, B); }
 
 // Calculations
@@ -79,9 +87,20 @@ pair[] polygon(int n, pair A, pair B) {
 	return gon;
 }
 
+pair[] square(pair A, pair B) { return polygon(4, A, B); }
+
+// Square by diagonal
+pair[] square_d(pair B, pair D) {
+	pair M = midpoint(B,D);
+	return new pair[] {rotate(90, M)*D, B, rotate(90, M)*B, D};
+}
 
 // TODO make into transform
 pair mirror(pair A, pair B) { return 2B-A; }
+
+pair bary(pair A, pair B, real x, real y) {
+	return x*A + y*B;
+}
 // basic centers
 pair bary(pair A, pair B, pair C, real x, real y, real z) {
 	real k = x+y+z;
@@ -172,7 +191,7 @@ Circ Circ(pair P) { return Circ(P, 1.0); }
 Circ Circ(pair P, pair Q) { return Circ(P, abs(Q-P)); }
 Circ Circ() { return Circ((0,0)); }
 
-// fix complaints about ambiguity if removed
+// fixes complaints about ambiguity
 Circ Circ(pair P, int r) { return Circ(P, (real)r); }
 
 // Radian
@@ -214,12 +233,12 @@ pair[] tangent(pair P, Circ c) {
 		d = abs(P-O);
 	}
 
-	write(r);
 	pair A=O+r*expi(acos(r/d))*unit(P-O);
 	pair B=O+r*expi(-acos(r/d))*unit(P-O);
 	return new pair[] {A,B};
 }
 
+// Directed tangent
 pair[] dirtangent(Circ c, Circ d, real sn=1) {
 	pair A = c.O;
 	pair B = d.O;
@@ -240,6 +259,8 @@ pair[] dirtangent(Circ c, Circ d, real sn=1) {
 }
 
 // triangle solving
+
+// SSS construction around circle
 pair[] tri_sss(real a, real b, real c, pair O=(0,0)) {
 	real[] angles = angles_sss(a,b,c);
 
@@ -254,6 +275,7 @@ pair[] tri_sss(real a, real b, real c, pair O=(0,0)) {
 	return new pair[] {A,B,C};
 }
 
+// SSS construction around vertex
 pair[] tri_sss(pair A, real a, real b, real c, pair O=(0,0)) {
 	real alpha = acos((b*b+c*c-a*a)/(2*b*c));
 	real beta = acos((c*c+a*a-b*b)/(2*c*a));
@@ -313,13 +335,6 @@ pair bipolar_aa(pair O1, real beta, pair O2, real gamma) {
 pair bipolar_sss(pair O1, pair O2, real a, real b, real c) {
 	return bipolar(O1, b/a*abs(O2-O1), O2, c/a*abs(O2-O1));
 }
-
-// PATHs
-pair waypoint(path p, real r) {
-	return point(p,reltime(p,r));
-}
-pair midpoint(path p){ return waypoint(p,.5);}
-
 // aliases
 pair join(pair A, pair B, pair C, pair D) { return extension(A,B,C,D); }
 pair[] join(pair A, pair B, Circ c) { return intersectionpoints(A--B,c); }
