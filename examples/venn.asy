@@ -33,6 +33,8 @@ picture circ_and(Circ a, Circ b, pen p=currentpen) {
 
 picture circ_nand(Circ a, Circ b, pen p=currentpen) {
 	picture ineq_ab;
+	draw(ineq_ab, a, invisible);
+	draw(ineq_ab, b, invisible);
 	filloutside(ineq_ab, lens(a, b), p);
 	return ineq_ab;
 }
@@ -55,7 +57,7 @@ picture circ_xor(Circ a, Circ b, pen p=currentpen) {
 /* add(circ_and(b,c, blue)); */
 /* add(circ_or(b,c, blue)); */
 /* add(circ_xnor(b,c, blue)); */
+/* add(circ_nand(b,c, blue)); */
 
 //TODO
 /* add(circ_xor(b,c, blue)); */
-/* add(circ_nand(b,c, blue)); */
