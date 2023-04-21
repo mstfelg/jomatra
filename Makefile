@@ -9,6 +9,10 @@ install:
 uninstall:
 	rm -rf $(PREFIX)/$(MODULES) $(PREFIX)/$(TARGET)
 
+test:
+	find tests -type f -name "*.asy" -exec asy -dir . -o ./build {} \;
+
 clean:
 	find . -type f -name "*.eps" -exec rm {} \;
 	find . -type f -name "*.pdf" -exec rm {} \;
+	rm -r build
