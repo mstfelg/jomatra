@@ -1,6 +1,6 @@
 import jomatra;
 
-pair[] tABC = acute; draw(tABC);
+pair[] tABC = acute_t; draw(tABC);
 pair A = tABC[0]; dot("$A$", A, dir(A));
 pair B = tABC[1]; dot("$B$", B, W);
 pair C = tABC[2]; dot("$C$", C, E);

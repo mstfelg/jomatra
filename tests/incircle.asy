@@ -1,7 +1,7 @@
 import jomatra;
 size(4cm);
 
-pair[] tABC = acute;
+pair[] tABC = acute_t;
 pair A,B,C;
 A = tABC[0]; B = tABC[1]; C = tABC[2];
 pair I = incenter(tABC);
