@@ -32,7 +32,7 @@ void draw(pair O, pair[] Ps) {
 }
 
 // returns interval [a, b] on number line A=(-1,0),B=(1,0)
-path segment(pair A, pair B, real a=-1.2, real b=1.2) {
+path segment(pair A, pair B, real a, real b=-a) {
 	pair AA = (1-a)*A/2 + (1+a)*B/2;
 	pair BB = (1-b)*A/2 + (1+b)*B/2;
 	return AA--BB;

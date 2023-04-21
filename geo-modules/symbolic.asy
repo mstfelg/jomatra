@@ -8,6 +8,10 @@ bool are_concurrent(pair A, pair B, pair C, pair D, pair E, pair F) {
 
 }
 
+bool are_parallel(pair A, pair B, pair C, pair D) {
+	return extension(A,B,C,D).x == infinity;
+}
+
 // TODO: performance improved by comparing line slopes
 bool are_collinear(pair A, pair B, pair C) {
 	return A == B || B == C || C == A
