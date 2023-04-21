@@ -1,18 +1,3 @@
-// DECORATION
-
-/* void dirty_label(pair[] gon) { */
-/* 	for (int i = 0; i < gon.length; ++i) */
-/* 		dot() */
-/* } */
-
-/* void draw(... pair[] gon) { */
-/* 	path p; */
-/* 	for (int i = 0; i < gon.length; ++i) */
-/* 		p = p--gon[i]; */
-/* 	p = p--cycle; */
-/* 	draw(p); */
-/* } */
-
 void draw(Circ c) {
 	draw(circle(c.O, c.r));
 }
@@ -30,6 +15,18 @@ void draw(pair O, pair[] Ps) {
 	for (int i = 0; i < Ps.length; ++i)
 		draw(O--Ps[i]);
 }
+
+// Shapes
+pair[] rectangle(pair A, pair B) {
+	return new pair[] {A, (xpart(B), ypart(A)), B, (xpart(A), ypart(B))};
+}
+
+pair[] rectangle(pair A, pair B, real w) {
+	pair u = (0,w)*unit(B-A);
+	return new pair[] { A+u, B+u, B-u, A-u };
+}
+
+pair[] rod(pair A, pair B, real w) { return rectangle(A, B, w); }
 
 // returns interval [a, b] on number line A=(-1,0),B=(1,0)
 path segment(pair A, pair B, real a, real b=-a) {
@@ -129,3 +126,5 @@ path[] nticks(pair A, pair B, real d, int n) {
 		ticks[i-1] = tick(A + (B-A)*i/n, d, theta);
 	return ticks;
 }
+
+void label(real t) { label(string(t)); }

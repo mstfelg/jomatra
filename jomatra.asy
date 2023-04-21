@@ -1,113 +1,110 @@
 import graph;
 import math;
 
-include style;
-include "./modules/bitmanip";
+// Style
+size(4cm);
+real markscalefactor=0.03;
+pair O = (0,0);
+pair[] acute_t = {dir(110), dir(215), dir(325)};
+pair[] obtuse_t = {dir(110), dir(145), dir(35)};
+pair[] right_t = {dir(110), dir(180), dir(0)};
 
+// Helper functions
+int nthBit(int a, int n) {
+	return AND(a, 2^n)#(2**n);
+}
+
+int nthSgn(int a, int n)
+{
+	return 2*nthBit(a,n)-1;
+}
+
+// Point in infinity
+struct InftyPoint {
+	pair base;
+	real dir;
+	void operator init(pair base=(0,0), pair dest) {
+		this.base = base;
+		this.dir = angle(dest-base);
+	}
+}
+InftyPoint InftyPoint(pair base=(0,0), real theta) {
+	InftyPoint ip = new InftyPoint;
+	ip.base = base;
+	ip.dir = theta;
+	return ip;
+}
+InftyPoint InftyPoint(pair base=(0,0), pair dest) {
+	InftyPoint ip = new InftyPoint;
+	ip.base = base;
+	ip.dir = angle(dest-base);
+	return ip;
+}
+
+InftyPoint operator init() { return InftyPoint((0,0),0.0); }
+InftyPoint operator cast(pair P) { return InftyPoint((0,0),angle(P)); }
+pair operator cast(InftyPoint ip) {
+	return ip.base + (cos(ip.dir), sin(ip.dir));
+}
+
+// Points
 // Polar coordinates
 pair pol(real r, real theta) { return r*dir(theta); }
-
-transform rot(real angle, pair z=(0,0)) {
-	return rotate(degrees(angle), z);
-}
-// basic geometry
-pair foot(pair P, pair A, pair B) {
-	real s;
-	s=dot(P-A,unit(B-A));
-	return (scale(s)*unit(B-A)+A);
+real dis(pair A, pair B) {
+	return sqrt((A.x-B.x)**2 + (A.y-B.y)**2);
 }
 
-pair perp(pair A, pair B, pair O=(0,0)) {
-	return (0,1)*(B-A)+O;
+
+// Weights & Parametrization
+pair point(pair A, pair B, real t) {
+	return (1-t)*A + t*B;
 }
 
-// Paths
 pair waypoint(path p, real r) {
 	return point(p,reltime(p,r));
 }
-pair midpoint(pair A, pair B){ return (A+B)/2;}
-pair midpoint(path p){ return waypoint(p,.5);}
 
+pair midpoint(path p) { return waypoint(p,.5); }
 
-// TODO
-pair bisect(pair A, pair O, pair B) {
-	return (0,0);
-}
-// Perpendicular bisector
-pair bisect(pair A, pair B) { return bisect(A, (A+B)/2, B); }
-
-// Calculations
-real[] angles_sss(real a, real b, real c) {
-	real alpha = acos((b*b+c*c-a*a)/(2*b*c));
-	real beta = acos((c*c+a*a-b*b)/(2*c*a));
-	real gamma = pi-alpha-beta;
-	return new real[] {alpha, beta, gamma};
-}
-real[] angles_sss(pair A, pair B, pair C) {
-	return angles_sss(abs(B-C), abs(C-A), abs(A-B));
+pair waypoint(pair A, pair B, real r) {
+	return point(A--B,reltime(A--B,r));
 }
 
-real circumradius(real a, real b, real c) {
-	return a*b*c/sqrt((a+b+c)*(-a+b+c)*(a-b+c)*(a+b-c));
-}
-real circumradius(pair A, pair B, pair C) {
-	return circumradius(abs(B-C), abs(C-A), abs(A-B));
+pair midpoint(pair A, pair B) { return (A+B)/2; }
+
+path operator ++(path p, pair pt) {
+	return p--(waypoint(p,1)+pt);
 }
 
-real exradius(real a, real b, real c) {
-	real s=(a+b+c)/2;
-	return sqrt(s*(s-b)*(s-c)/(s-a));
-}
-real exradius(pair A, pair B, pair C) {
-	return exradius(abs(B-C), abs(C-A), abs(A-B));
-}
-real inradius(real a, real b, real c) {
-	real s=(a+b+c)/2;
-	return sqrt(s*(s-a)*(s-b)*(s-c))/s;
-}
-real inradius(pair A, pair B, pair C) {
-	return inradius(abs(B-C), abs(C-A), abs(A-B));
+path operator ++(... pair[] pts) {
+	path p = pts[0];
+	for (int i = 1; i < pts.length; ++i)
+		p = p--(pts[i-1]+pts[i]);
+	return p;
 }
 
-// Polygons
-pair[] polygon(int n) {
-	pair[] gon = new pair[n];
-	for (int i=0; i < n; ++i) gon[i]=expi(2pi*(i+0.5)/n-0.5*pi);
-	return gon;
+real ratio(pair P, pair A, pair B) {
+	return dis(P,A)/dis(P,B);
 }
 
-// TODO
-pair[] polygon(int n, pair A, pair B) {
-	real s = abs(B-A);
-	real apothem = s/2*cot(pi/n);
-	pair O = (A+B)/2+(0,apothem)*unit(B-A);
-	real R = s/2*csc(2*pi/n);
-	pair[] gon = new pair[n];
-		for (int i=0; i < n; ++i) gon[i]= O + expi(2pi*(i+0.5)/n-0.5*pi);
-	return gon;
-}
-
-pair[] square(pair A, pair B) { return polygon(4, A, B); }
-
-// Square by diagonal
-pair[] square_d(pair B, pair D) {
-	pair M = midpoint(B,D);
-	return new pair[] {rotate(90, M)*D, B, rotate(90, M)*B, D};
-}
-
-// TODO make into transform
-pair mirror(pair A, pair B) { return 2B-A; }
-
-pair bary(pair A, pair B, real x, real y) {
-	return x*A + y*B;
-}
-// basic centers
+// Barycentric coordinates
 pair bary(pair A, pair B, pair C, real x, real y, real z) {
 	real k = x+y+z;
 	x /= k;
 	y /= k;
 	z /= k;
 	return x*A + y*B + z*C;
+}
+
+real[] angles_sss(real a, real b, real c) {
+	real alpha = acos((b*b+c*c-a*a)/(2*b*c));
+	real beta = acos((c*c+a*a-b*b)/(2*c*a));
+	real gamma = pi-alpha-beta;
+	return new real[] {alpha, beta, gamma};
+}
+
+real[] angles_sss(pair A, pair B, pair C) {
+	return angles_sss(abs(B-C), abs(C-A), abs(A-B));
 }
 
 pair bary(pair A, pair B, pair C, real f(real, real, real)) {
@@ -125,50 +122,103 @@ pair bary(pair A, pair B, pair C, real f(real, real, real)) {
 	return x*A + y*B + z*C;
 }
 
-pair centroid(pair A, pair B, pair C) {
-	return (A+B+C)/3;
+pair bary(pair A, pair B, real x, real y) {
+	return x*A + y*B;
 }
 
-pair orthocenter(pair A, pair B, pair C) {
-	real f(real, real, real) = new real(real a, real b, real c) {
-		return tan(a);
-	};
-	return bary(A,B,C,f);
+// Orthogonality
+pair perp(pair A, pair B, pair O=(0,0)) {
+	return (0,1)*(B-A)+O;
 }
 
-pair circumcenter(pair A, pair B, pair C) {
-	real f(real, real, real) = new real(real a, real b, real c) {
-		return sin(2*a);
-	};
-	return bary(A,B,C,f);
+pair foot(pair P, pair A, pair B) {
+	real s;
+	s=dot(P-A,unit(B-A));
+	return (scale(s)*unit(B-A)+A);
 }
 
-pair excenter(pair A, pair B, pair C) {
-	real[] ang = angles_sss(A,B,C);
-	return bary(A,B,C, -sin(ang[0]), sin(ang[1]), sin(ang[2]));
+real dis(pair A, pair B, pair C) {
+	return dis(A,foot(A,B,C));
 }
 
-pair incenter(pair A, pair B, pair C) {
-	real f(real, real, real) = new real(real a, real b, real c) {
-		return sin(a);
-	};
-	return bary(A,B,C,f);
+// Lines
+bool are_concurrent(pair A, pair B, pair C, pair D, pair E, pair F) {
+	return (extension(A,B,C,D) == (infinity,infinity) // parallel case
+		 && (infinity,infinity)==extension(C,D,E,F))
+		 || (abs(extension(A,B,C,D).x-extension(C,D,E,F).x) < 1/10^(5)
+		 && abs(extension(A,B,C,D).y-extension(C,D,E,F).y) < 1/10^(5)
+		 );
 }
 
-pair incenter(pair[] tABC) { return incenter(tABC[0], tABC[1], tABC[2]); }
-
-pair symmedian(pair A, pair B, pair C) {
-	real[] ang = angles_sss(A,B,C);
-	return bary(A,B,C, -sin(ang[0])**2, sin(ang[1])**2, sin(ang[2])**2);
-}
-pair lemoine(pair A, pair B, pair C) {
-	real f(real, real, real) = new real(real a, real b, real c) {
-		return sin(a)**2;
-	};
-	return bary(A,B,C,f);
+bool are_collinear(pair A, pair B, pair C) {
+	return A == B || B == C || C == A
+			|| abs(unit(C-A)-unit(A-B)) < 1/10^5
+			|| abs(unit(B-A)+unit(C-A)) < 1/10^5;
 }
 
-// Circles
+bool are_parallel(pair A, pair B, pair C, pair D) {
+	return extension(A,B,C,D).x == infinity;
+}
+
+pair cut(pair A, pair B, pair C, pair D) {
+	if (are_parallel(A,B,C,D))
+		return InftyPoint((A+B+C+D)/4, angle(B-A));
+	return extension(A,B,C,D);
+}
+pair[] cut(path a, path b) { return intersectionpoints(a, b); }
+
+pair midline(pair A, pair B, pair C, pair D) {
+	if (are_parallel(A,B,C,D))
+		return (A+B+C+D)/4;
+	pair P = (A+B)/2;
+	pair Q = (C+D)/2;
+	pair R = cut(A,B, C,D);
+	real a = dis(R,P);
+	real b = dis(R,Q);
+	return a*Q/(a+b) + b*P/(a+b);
+}
+
+// Angles
+real angle(pair A, pair B, pair O=(0,0)) { return angle(A-O)-angle(B-O); }
+real angle_d(pair A, pair B, pair O=(0,0)) { return degrees(angle(A,B,O)); }
+
+transform rot(real angle, pair z=(0,0)) {
+	return rotate(degrees(angle), z);
+}
+pair mirror(pair A, pair B) { return 2B-A; }
+
+// Parametrized directed arc
+pair arc_param(pair A, pair B, real t=0, pair O=(0,0)) {
+	pair BB = unit(B-O);
+	pair AA = unit(A-O);
+	pair C = unit(BB-AA);
+	real ang = angle(BB,AA);
+	return rot(-pi/2+.5*ang*t,O) * C;
+}
+
+// Parametrized symmetric (non-directed) arc
+pair arc_symparam(pair A, pair B, real t=0, pair O=(0,0)) {
+	pair BB = unit(B-O);
+	pair AA = unit(A-O);
+	pair C = O+unit(BB+AA);
+	real ang = angle(BB,AA);
+	return rot(ang*t,O) * C;
+}
+
+pair mid_arc(pair A, pair B, pair O=(0,0)) {
+	return arc_param(A,B,O);
+}
+
+pair[] bisect(pair A, pair O, pair B) {
+	pair inBisector = arc_symparam(A,B,O);
+	pair outBisector = rot(pi/2, O)*inBisector;
+	return new pair[] {inBisector, outBisector};
+}
+
+pair[] bisect(pair A, pair B) { return bisect(A, B, (A+B)/2); }
+
+// Triangles
+include "./geo-modules/centers.asy";
 struct Circ {
 	pair O;
 	real r;
@@ -221,44 +271,18 @@ Circ incircle(pair A, pair B, pair C) {
 Circ excircle(pair A, pair B, pair C) {
 	return Circ(excenter(A,B,C),exradius(A,B,C));
 }
-
-pair[] tangent(pair P, Circ c) {
-	pair O = c.O;
-	real r = c.r;
-	real d = abs(P-O);
-	if (d == r)
-		return new pair[] {P+(0,1)*unit(O-P), P+(0,-1)*unit(O-P)};
-	if (d < r) {
-		P = r**2/d*unit(P-O);
-		d = abs(P-O);
-	}
-
-	pair A=O+r*expi(acos(r/d))*unit(P-O);
-	pair B=O+r*expi(-acos(r/d))*unit(P-O);
-	return new pair[] {A,B};
+Circ Circ(pair A, pair B, pair C) {
+	return Circ(circumcenter(A,B,C),circumradius(A,B,C));
 }
 
-// Directed tangent
-pair[] dirtangent(Circ c, Circ d, real sn=1) {
-	pair A = c.O;
-	pair B = d.O;
-	real r = c.r;
-	real s = d.r;
-	real d = abs(B-A);
-	if (d + s < r) {
-		if (d == s)
-			return new pair[] {(0,1)*unit(B-A), (0,-1)*unit(B-A)};
-		B = r**2/(d**2-d*s**2)*unit(B-A);
-		s *= r**2/(d**4-d**2*s**2);
-		d = abs(B-A);
-	}
-
-	pair P=A+r*expi(acos((r-sn*s)/d))*unit(B-A);
-	pair Q=B+sn*s*expi(acos((r-sn*s)/d))*unit(B-A);
-	return new pair[] {P,Q};
+bool are_cyclic(pair A, pair B, pair C, pair D) {
+	pair O1, O2;
+	O1 = circumcenter(A,B,C);
+	O2 = circumcenter(A,B,D);
+	return abs(O1.x-O2.x) < 1/10^(5)
+		&& abs(O1.y-O2.y) < 1/10^(5);
 }
-
-// triangle solving
+pair[] cut(pair A, pair B, Circ c) { return intersectionpoints(A--B,c); }
 
 // SSS construction around circle
 pair[] tri_sss(real a, real b, real c, pair O=(0,0)) {
@@ -317,6 +341,7 @@ pair[] tri_aa(pair A, real beta, real gamma, pair O=(0,0)) {
 }
 
 // Bipolar coordinates
+// Used for constructing triangles on segments.
 pair bipolar(pair O1, real r1, pair O2, real r2) {
 	real a = abs(O2-O1);
 	pair D = ((r2**2+a**2-r1**2)*O1 + (a**2+r1**2-r2**2)*O2)/(2*a**2);
@@ -332,14 +357,76 @@ pair bipolar_aa(pair O1, real beta, pair O2, real gamma) {
 	return D + (0,sin(beta)*sin(gamma)/sin(alpha))*(O2-O1);
 }
 
+pair isosceles(pair A, pair B, real theta=pi/3) {
+	return bipolar_aa(A, .5*pi-.5*theta, B, .5*pi-.5*theta);
+}
+
 pair bipolar_sss(pair O1, pair O2, real a, real b, real c) {
 	return bipolar(O1, b/a*abs(O2-O1), O2, c/a*abs(O2-O1));
 }
-// aliases
-pair join(pair A, pair B, pair C, pair D) { return extension(A,B,C,D); }
-pair[] join(pair A, pair B, Circ c) { return intersectionpoints(A--B,c); }
-pair[] join(path a, path b) { return intersectionpoints(a, b); }
 
-include "./modules/decor.asy";
-include "./modules/shapes.asy";
-include "./modules/symbolic.asy";
+// Tangency
+pair[] tangent(pair P, Circ c) {
+	pair O = c.O;
+	real r = c.r;
+	real d = abs(P-O);
+	if (d == r)
+		return new pair[] {P+(0,1)*unit(O-P), P+(0,-1)*unit(O-P)};
+	if (d < r) {
+		P = r**2/d*unit(P-O);
+		d = abs(P-O);
+	}
+
+	pair A=O+r*expi(acos(r/d))*unit(P-O);
+	pair B=O+r*expi(-acos(r/d))*unit(P-O);
+	return new pair[] {A,B};
+}
+
+// Directed tangent
+pair[] dirtangent(Circ c, Circ d, real sn=1) {
+	pair A = c.O;
+	pair B = d.O;
+	real r = c.r;
+	real s = d.r;
+	real d = abs(B-A);
+	if (d + s < r) {
+		if (d == s)
+			return new pair[] {(0,1)*unit(B-A), (0,-1)*unit(B-A)};
+		B = r**2/(d**2-d*s**2)*unit(B-A);
+		s *= r**2/(d**4-d**2*s**2);
+		d = abs(B-A);
+	}
+
+	pair P=A+r*expi(acos((r-sn*s)/d))*unit(B-A);
+	pair Q=B+sn*s*expi(acos((r-sn*s)/d))*unit(B-A);
+	return new pair[] {P,Q};
+}
+
+
+// Polygons
+pair[] polygon(int n) {
+	pair[] gon = new pair[n];
+	for (int i=0; i < n; ++i) gon[i]=expi(2pi*(i+0.5)/n-0.5*pi);
+	return gon;
+}
+
+pair[] polygon(int n, pair A, pair B) {
+	real s = abs(B-A);
+	real apothem = s/2*cot(pi/n);
+	pair O = (A+B)/2+(0,apothem)*unit(B-A);
+	real R = s/2*csc(2*pi/n);
+	pair[] gon = new pair[n];
+		for (int i=0; i < n; ++i) gon[i]= O + expi(2pi*(i+0.5)/n-0.5*pi);
+	return gon;
+}
+
+pair[] square(pair A, pair B) { return polygon(4, A, B); }
+
+// Square by diagonal
+pair[] square_d(pair B, pair D) {
+	pair M = midpoint(B,D);
+	return new pair[] {rotate(90, M)*D, B, rotate(90, M)*B, D};
+}
+
+include "./geo-modules/decor.asy";
+include "./geo-modules/apollonius.asy";
