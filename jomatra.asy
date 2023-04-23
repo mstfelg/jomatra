@@ -49,15 +49,27 @@ pair operator cast(InftyPoint ip) {
 
 // Points
 // Polar coordinates
-pair pol(real r, real theta) { return r*dir(theta); }
+pair pol(real r, real theta)
+{
+	return r*dir(theta);
+}
+pair pol_rad(real r, real theta)
+{
+	return r*dir(theta*pi/180);
+}
+
 real dis(pair A, pair B) {
 	return sqrt((A.x-B.x)**2 + (A.y-B.y)**2);
 }
 
-
 // Weights & Parametrization
 pair point(pair A, pair B, real t) {
 	return (1-t)*A + t*B;
+}
+
+pair abs_point(pair A, pair B, real t)
+{
+	return A + t*unit(B-A);
 }
 
 pair waypoint(path p, real r) {
@@ -84,7 +96,16 @@ path operator ++(... pair[] pts) {
 }
 
 real ratio(pair P, pair A, pair B) {
-	return dis(P,A)/dis(P,B);
+	pair tf = (A-P)/(B-P);
+
+	// P lies on A,B
+	// Return signed ratio
+	if (ypart(tf) == 0)
+		return xpart(tf);
+
+	// Transformation tf is vector
+	// Return its length
+	return length(tf);
 }
 
 // Barycentric coordinates
@@ -124,6 +145,21 @@ pair bary(pair A, pair B, pair C, real f(real, real, real)) {
 
 pair bary(pair A, pair B, real x, real y) {
 	return x*A + y*B;
+}
+
+real circumradius(real a, real b, real c) {
+	return a*b*c/sqrt((a+b+c)*(-a+b+c)*(a-b+c)*(a+b-c));
+}
+
+real circumradius(pair A, pair B, pair C) {
+	return circumradius(abs(B-C), abs(C-A), abs(A-B));
+}
+
+pair circumcenter(pair A, pair B, pair C) {
+	real f(real, real, real) = new real(real a, real b, real c) {
+		return sin(2*a);
+	};
+	return bary(A,B,C,f);
 }
 
 // Orthogonality
@@ -185,6 +221,12 @@ real angle_d(pair A, pair B, pair O=(0,0)) { return degrees(angle(A,B,O)); }
 transform rot(real angle, pair z=(0,0)) {
 	return rotate(degrees(angle), z);
 }
+
+// Reflect about a point
+transform reflect(pair P) {
+	return rotate(180, P);
+}
+
 pair mirror(pair A, pair B) { return 2B-A; }
 
 // Parametrized directed arc
@@ -205,17 +247,29 @@ pair arc_symparam(pair A, pair B, real t=0, pair O=(0,0)) {
 	return rot(ang*t,O) * C;
 }
 
+path circ_arc(pair A, pair B, pair C) {
+	return arc(circumcenter(A,B,C), A, C);
+}
+
 pair mid_arc(pair A, pair B, pair O=(0,0)) {
 	return arc_param(A,B,O);
 }
 
+// Angle bisector
 pair[] bisect(pair A, pair O, pair B) {
 	pair inBisector = arc_symparam(A,B,O);
 	pair outBisector = rot(pi/2, O)*inBisector;
 	return new pair[] {inBisector, outBisector};
 }
 
-pair[] bisect(pair A, pair B) { return bisect(A, B, (A+B)/2); }
+// Perpendicular bisector
+pair[] bisect(pair A, pair B)
+{
+	return new pair[] {
+		(A+B)/2 + (0,1)*unit(B-A),
+		(A+B)/2 + (0,-1)*unit(B-A)
+	};
+}
 
 // Triangles
 include "./geo-modules/centers.asy";
@@ -282,7 +336,24 @@ bool are_cyclic(pair A, pair B, pair C, pair D) {
 	return abs(O1.x-O2.x) < 1/10^(5)
 		&& abs(O1.y-O2.y) < 1/10^(5);
 }
-pair[] cut(pair A, pair B, Circ c) { return intersectionpoints(A--B,c); }
+pair[] cut(pair A, pair B, Circ c)
+{
+	return intersectionpoints(A--B, c);
+}
+
+pair[] cut(Circ c, pair A, pair B)
+{
+	return intersectionpoints(A--B, c);
+}
+
+pair[] circumscribe(pair O, real r, pair[] pts) {
+	if (pts.length == 2) {
+		return null;
+	}
+	real R = circumradius(pts[0], pts[1], pts[2]);
+	pair O2 = circumcenter(pts[0], pts[1], pts[2]);
+	return shift(O-O2) * scale(r/R) * pts;
+}
 
 // SSS construction around circle
 pair[] tri_sss(real a, real b, real c, pair O=(0,0)) {
@@ -404,13 +475,16 @@ pair[] dirtangent(Circ c, Circ d, real sn=1) {
 
 
 // Polygons
-pair[] polygon(int n) {
+pair[] polygon(int n){
+
 	pair[] gon = new pair[n];
 	for (int i=0; i < n; ++i) gon[i]=expi(2pi*(i+0.5)/n-0.5*pi);
 	return gon;
 }
 
-pair[] polygon(int n, pair A, pair B) {
+// Regular polygon
+pair[] polygon(int n, pair A, pair B)
+{
 	real s = abs(B-A);
 	real apothem = s/2*cot(pi/n);
 	pair O = (A+B)/2+(0,apothem)*unit(B-A);
@@ -420,10 +494,55 @@ pair[] polygon(int n, pair A, pair B) {
 	return gon;
 }
 
-pair[] square(pair A, pair B) { return polygon(4, A, B); }
+// Polyline by a list of displacement vectors
+pair[] polyline_disp(pair O ... pair[] walk)
+{
+	pair[] gon = {O};
+	for (int i = 0; i < walk.length; ++i) {
+		pair cur = gon[gon.length-1];
+		pair next = walk[i];
+		gon.push(cur+next);
+	}
+	return gon;
+}
+
+// Polyline by list of rotational vectors with absolute side lengths
+pair[] polyline_rot(pair O, pair A ... pair[] walk)
+{
+	pair[] gon = {O, A};
+	pair cur_dir = A-O;
+	for (int i = 0; i < walk.length; ++i) {
+		pair cur = gon[gon.length - 1];
+		pair next = unit(cur_dir) * walk[i] + cur;
+		gon.push(next);
+		cur_dir = next - cur;
+	}
+	return gon;
+}
+
+// Polyline by list of rotational vectors with relative side lengths
+pair[] polyline_rot_rel(pair O, pair A ... pair[] walk)
+{
+	pair[] gon = {O, A};
+	pair cur_dir = A-O;
+	for (int i = 0; i < walk.length; ++i) {
+		pair cur = gon[gon.length - 1];
+		pair next = cur_dir * walk[i] + cur;
+		gon.push(next);
+		cur_dir = next - cur;
+	}
+	return gon;
+}
+
+
+pair[] square(pair A, pair B)
+{
+	return polygon(4, A, B);
+}
 
 // Square by diagonal
-pair[] square_d(pair B, pair D) {
+pair[] square_d(pair B, pair D)
+{
 	pair M = midpoint(B,D);
 	return new pair[] {rotate(90, M)*D, B, rotate(90, M)*B, D};
 }

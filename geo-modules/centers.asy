@@ -1,15 +1,3 @@
-real circumradius(real a, real b, real c) {
-	return a*b*c/sqrt((a+b+c)*(-a+b+c)*(a-b+c)*(a+b-c));
-}
-real circumradius(pair A, pair B, pair C) {
-	return circumradius(abs(B-C), abs(C-A), abs(A-B));
-}
-pair circumcenter(pair A, pair B, pair C) {
-	real f(real, real, real) = new real(real a, real b, real c) {
-		return sin(2*a);
-	};
-	return bary(A,B,C,f);
-}
 real exradius(real a, real b, real c) {
 	real s=(a+b+c)/2;
 	return sqrt(s*(s-b)*(s-c)/(s-a));
