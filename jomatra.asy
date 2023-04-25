@@ -1,5 +1,4 @@
-import graph;
-import math;
+import geometry;
 
 // Style
 size(4cm);
@@ -161,32 +160,6 @@ pair foot(pair P, pair A, pair B) {
 real dis(pair A, pair B, pair C) {
 	return dis(A,foot(A,B,C));
 }
-
-// Lines
-bool are_concurrent(pair A, pair B, pair C, pair D, pair E, pair F) {
-	return (extension(A,B,C,D) == (infinity,infinity) // parallel case
-		 && (infinity,infinity)==extension(C,D,E,F))
-		 || (abs(extension(A,B,C,D).x-extension(C,D,E,F).x) < 1/10^(5)
-		 && abs(extension(A,B,C,D).y-extension(C,D,E,F).y) < 1/10^(5)
-		 );
-}
-
-bool are_collinear(pair A, pair B, pair C) {
-	return A == B || B == C || C == A
-			|| abs(unit(C-A)-unit(A-B)) < 1/10^5
-			|| abs(unit(B-A)+unit(C-A)) < 1/10^5;
-}
-
-bool are_parallel(pair A, pair B, pair C, pair D) {
-	return extension(A,B,C,D).x == infinity;
-}
-
-pair cut(pair A, pair B, pair C, pair D) {
-	if (are_parallel(A,B,C,D))
-		return InftyPoint((A+B+C+D)/4, angle(B-A));
-	return extension(A,B,C,D);
-}
-pair[] cut(path a, path b) { return intersectionpoints(a, b); }
 
 pair midline(pair A, pair B, pair C, pair D) {
 	if (are_parallel(A,B,C,D))
