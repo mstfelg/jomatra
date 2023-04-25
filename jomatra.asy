@@ -7,6 +7,8 @@ point O = (0,0);
 point[] acute_t = {dir(110), dir(215), dir(325)};
 point[] obtuse_t = {dir(110), dir(145), dir(35)};
 point[] right_t = {dir(110), dir(180), dir(0)};
+point[] cyclic_q = {dir(130), dir(215), dir(325), dir(75)};
+point[] convex_q = {dir(145), dir(200), dir(340), 1.25*dir(75)};
 
 // Helper functions
 int nthBit(int a, int n) {
@@ -272,50 +274,13 @@ pair isosceles(pair A, pair B, real theta=pi/3) {
 	return bipolar_aa(A, .5*pi-.5*theta, B, .5*pi-.5*theta);
 }
 
+// Finds intersection of two circles
 pair bipolar_sss(pair O1, pair O2, real a, real b, real c) {
 	return bipolar(O1, b/a*abs(O2-O1), O2, c/a*abs(O2-O1));
 }
 
-// Tangency
-pair[] tangent(pair P, circle c) {
-	pair O = c.C;
-	real r = c.r;
-	real d = abs(P-O);
-	if (d == r)
-		return new pair[] {P+(0,1)*unit(O-P), P+(0,-1)*unit(O-P)};
-	if (d < r) {
-		P = r**2/d*unit(P-O);
-		d = abs(P-O);
-	}
-
-	pair A=O+r*expi(acos(r/d))*unit(P-O);
-	pair B=O+r*expi(-acos(r/d))*unit(P-O);
-	return new pair[] {A,B};
-}
-
-// Directed tangent
-pair[] dirtangent(circle c, circle d, real sn=1) {
-	pair A = c.C;
-	pair B = d.C;
-	real r = c.r;
-	real s = d.r;
-	real d = abs(B-A);
-	if (d + s < r) {
-		if (d == s)
-			return new pair[] {(0,1)*unit(B-A), (0,-1)*unit(B-A)};
-		B = r**2/(d**2-d*s**2)*unit(B-A);
-		s *= r**2/(d**4-d**2*s**2);
-		d = abs(B-A);
-	}
-
-	pair P=A+r*expi(acos((r-sn*s)/d))*unit(B-A);
-	pair Q=B+sn*s*expi(acos((r-sn*s)/d))*unit(B-A);
-	return new pair[] {P,Q};
-}
-
 // Polygons
 pair[] polygon(int n){
-
 	pair[] gon = new pair[n];
 	for (int i=0; i < n; ++i) gon[i]=expi(2pi*(i+0.5)/n-0.5*pi);
 	return gon;
