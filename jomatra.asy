@@ -4,9 +4,9 @@ import geometry;
 size(4cm);
 real markscalefactor=0.03;
 point O = (0,0);
-pair[] acute_t = {dir(110), dir(215), dir(325)};
-pair[] obtuse_t = {dir(110), dir(145), dir(35)};
-pair[] right_t = {dir(110), dir(180), dir(0)};
+point[] acute_t = {dir(110), dir(215), dir(325)};
+point[] obtuse_t = {dir(110), dir(145), dir(35)};
+point[] right_t = {dir(110), dir(180), dir(0)};
 
 // Helper functions
 int nthBit(int a, int n) {
@@ -16,34 +16,6 @@ int nthBit(int a, int n) {
 int nthSgn(int a, int n)
 {
 	return 2*nthBit(a,n)-1;
-}
-
-// Point in infinity
-struct InftyPoint {
-	pair base;
-	real dir;
-	void operator init(pair base=(0,0), pair dest) {
-		this.base = base;
-		this.dir = angle(dest-base);
-	}
-}
-InftyPoint InftyPoint(pair base=(0,0), real theta) {
-	InftyPoint ip = new InftyPoint;
-	ip.base = base;
-	ip.dir = theta;
-	return ip;
-}
-InftyPoint InftyPoint(pair base=(0,0), pair dest) {
-	InftyPoint ip = new InftyPoint;
-	ip.base = base;
-	ip.dir = angle(dest-base);
-	return ip;
-}
-
-InftyPoint operator init() { return InftyPoint((0,0),0.0); }
-InftyPoint operator cast(pair P) { return InftyPoint((0,0),angle(P)); }
-pair operator cast(InftyPoint ip) {
-	return ip.base + (cos(ip.dir), sin(ip.dir));
 }
 
 // Points
@@ -105,45 +77,6 @@ real ratio(pair P, pair A, pair B) {
 	// Transformation tf is vector
 	// Return its length
 	return length(tf);
-}
-
-// Barycentric coordinates
-pair bary(pair A, pair B, pair C, real x, real y, real z) {
-	real k = x+y+z;
-	x /= k;
-	y /= k;
-	z /= k;
-	return x*A + y*B + z*C;
-}
-
-real[] angles_sss(real a, real b, real c) {
-	real alpha = acos((b*b+c*c-a*a)/(2*b*c));
-	real beta = acos((c*c+a*a-b*b)/(2*c*a));
-	real gamma = pi-alpha-beta;
-	return new real[] {alpha, beta, gamma};
-}
-
-real[] angles_sss(pair A, pair B, pair C) {
-	return angles_sss(abs(B-C), abs(C-A), abs(A-B));
-}
-
-pair bary(pair A, pair B, pair C, real f(real, real, real)) {
-	real[] angles = angles_sss(A,B,C);
-	real aa = angles[0];
-	real bb = angles[1];
-	real cc = angles[2];
-	real x = f(aa, bb, cc);
-	real y = f(bb, cc, aa);
-	real z = f(cc, aa, bb);
-	real k = x+y+z;
-	x /= k;
-	y /= k;
-	z /= k;
-	return x*A + y*B + z*C;
-}
-
-pair bary(pair A, pair B, real x, real y) {
-	return x*A + y*B;
 }
 
 // Orthogonality
@@ -225,10 +158,43 @@ pair[] bisect(pair A, pair B)
 	};
 }
 
-// Triangles
+// Circles
 include "./geo-modules/centers.asy";
-include "./geo-modules/circle.asy";
+path carc(pair O, real r, real alpha, real beta) {
+	return arc(O, r, degrees(alpha), degrees(beta));
+}
+path carc(pair O, real r, real alpha) {
+	return carc(O, r, 0, alpha);
+}
+path carc(circle c, real alpha, real beta) {
+	return arc(c.C, c.r, degrees(alpha), degrees(beta));
+}
+path carc(circle c, real alpha) {
+	return carc(c, 0, alpha);
+}
 
+bool are_cyclic(pair A, pair B, pair C, pair D) {
+	pair O1, O2;
+	O1 = circumcenter(A,B,C);
+	O2 = circumcenter(A,B,D);
+	return abs(O1.x-O2.x) < 1/10^(5)
+		&& abs(O1.y-O2.y) < 1/10^(5);
+}
+
+pair[] circumscribe(pair O, real r, pair[] pts) {
+	if (pts.length == 2) {
+		return null;
+	}
+	real R = circumradius(pts[0], pts[1], pts[2]);
+	pair O2 = circumcenter(pts[0], pts[1], pts[2]);
+	return shift(O-O2) * scale(r/R) * pts;
+}
+
+path circ_arc(pair A, pair B, pair C) {
+	return arc(circumcenter(A,B,C), A, C);
+}
+
+// Triangles
 // SSS construction around circle
 pair[] tri_sss(real a, real b, real c, pair O=(0,0)) {
 	real[] angles = angles_sss(a,b,c);
