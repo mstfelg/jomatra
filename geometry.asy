@@ -6945,16 +6945,49 @@ point[] intersectionpoints(hyperbola a, hyperbola b)
 	return intersectionpoints((conic)a, (conic)b);
 }
 
+// Tangency
+point[] dirtangent(point P, circle c) {
+	point O = c.C;
+	real r = c.r;
+	real d = abs(P-O);
+
+	// Point on center
+	if (d == 0) {
+		return new point[] {O};
+	}
+
+	// Point on circle
+	if (d == r) {
+		return new point[] {P+(0,1)*unit(O-P), P+(0,-1)*unit(O-P)};
+	}
+
+	// Point inside: take tangents of inversion
+	if (d < r) {
+		P = r**2/d*unit(P-O)+O;
+		d = abs(P-O);
+	}
+
+	point A = O+r*expi(acos(r/d))*unit(P-O);
+	point B = O+r*expi(-acos(r/d))*unit(P-O);
+	return new point[] {A,B};
+}
+
 /*<asyxml><function type="point[]" signature="intersectionpoints(circle,circle)"><code></asyxml>*/
 point[] intersectionpoints(circle c1, circle c2)
 {/*<asyxml></code><documentation></documentation></function></asyxml>*/
-	if (degenerate(c1))
+	if (degenerate(c1)) {
 		return degenerate(c2) ?
 			new point[]{intersectionpoint(c1.l, c2.l)} : intersectionpoints(c1.l, c2);
-	if (degenerate(c2)) return intersectionpoints(c1, c2.l);
-	return (c1.C == c2.C) ?
-		new point[] :
-		intersectionpoints(radicalline(c1, c2), c1);
+	}
+	if (degenerate(c2)) {
+		return intersectionpoints(c1, c2.l);
+	}
+	real a = abs(c1.C-c2.C);
+	if (a == 0) {
+		return new point[];
+	}
+	point D = ((c2.r**2+a**2-c1.r**2)*c1.C + (a**2+c1.r**2-c2.r**2)*c2.C)/(2*a**2);
+	return dirtangent(D, c1);
 }
 
 // Aliases for intersectionpoints
@@ -6966,6 +6999,10 @@ pair[] cut(point A, point B, circle c)
 pair[] cut(circle c, point A, point B)
 {
 	return intersectionpoints(line(A,B), c);
+}
+
+pair[] cut(circle c, circle d) {
+	return intersectionpoints(c, d);
 }
 
 pair[] cut(circle c, line l) {
