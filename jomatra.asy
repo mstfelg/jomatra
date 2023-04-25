@@ -3,7 +3,7 @@ import geometry;
 // Style
 size(4cm);
 real markscalefactor=0.03;
-pair O = (0,0);
+point O = (0,0);
 pair[] acute_t = {dir(110), dir(215), dir(325)};
 pair[] obtuse_t = {dir(110), dir(145), dir(35)};
 pair[] right_t = {dir(110), dir(180), dir(0)};
@@ -270,13 +270,13 @@ pair[] tri_sas(pair A, real b, real alpha, real c, pair O=(0,0)) {
 	return new pair[] {A,B,C};
 }
 
-pair[] tri_aa(real beta, real gamma, Circ c=Circ()) {
-	pair O = c.O;
+pair[] tri_aa(real beta, real gamma, circle c=circle(O,1)) {
+	point O = c.C;
 	real R = c.r;
-	pair A = O + expi(beta-gamma)*(0,R);
-	pair B = O + expi(-pi+beta+gamma)*(0,-R);
-	pair C = O + expi(pi-beta-gamma)*(0,-R);
-	return new pair[] {A,B,C};
+	point A = O + expi(beta-gamma)*(0,R);
+	point B = O + expi(-pi+beta+gamma)*(0,-R);
+	point C = O + expi(pi-beta-gamma)*(0,-R);
+	return new point[] {A,B,C};
 }
 
 pair[] tri_aa(pair A, real beta, real gamma, pair O=(0,0)) {
@@ -311,8 +311,8 @@ pair bipolar_sss(pair O1, pair O2, real a, real b, real c) {
 }
 
 // Tangency
-pair[] tangent(pair P, Circ c) {
-	pair O = c.O;
+pair[] tangent(pair P, circle c) {
+	pair O = c.C;
 	real r = c.r;
 	real d = abs(P-O);
 	if (d == r)
@@ -328,9 +328,9 @@ pair[] tangent(pair P, Circ c) {
 }
 
 // Directed tangent
-pair[] dirtangent(Circ c, Circ d, real sn=1) {
-	pair A = c.O;
-	pair B = d.O;
+pair[] dirtangent(circle c, circle d, real sn=1) {
+	pair A = c.C;
+	pair B = d.C;
 	real r = c.r;
 	real s = d.r;
 	real d = abs(B-A);
