@@ -147,21 +147,6 @@ pair bary(pair A, pair B, real x, real y) {
 	return x*A + y*B;
 }
 
-real circumradius(real a, real b, real c) {
-	return a*b*c/sqrt((a+b+c)*(-a+b+c)*(a-b+c)*(a+b-c));
-}
-
-real circumradius(pair A, pair B, pair C) {
-	return circumradius(abs(B-C), abs(C-A), abs(A-B));
-}
-
-pair circumcenter(pair A, pair B, pair C) {
-	real f(real, real, real) = new real(real a, real b, real c) {
-		return sin(2*a);
-	};
-	return bary(A,B,C,f);
-}
-
 // Orthogonality
 pair perp(pair A, pair B, pair O=(0,0)) {
 	return (0,1)*(B-A)+O;
@@ -247,10 +232,6 @@ pair arc_symparam(pair A, pair B, real t=0, pair O=(0,0)) {
 	return rot(ang*t,O) * C;
 }
 
-path circ_arc(pair A, pair B, pair C) {
-	return arc(circumcenter(A,B,C), A, C);
-}
-
 pair mid_arc(pair A, pair B, pair O=(0,0)) {
 	return arc_param(A,B,O);
 }
@@ -273,87 +254,7 @@ pair[] bisect(pair A, pair B)
 
 // Triangles
 include "./geo-modules/centers.asy";
-struct Circ {
-	pair O;
-	real r;
-	void operator init(pair O, real r) {
-		this.O=O;
-		this.r=r;
-	}
-	Circ operator init() { return Circ.Circ((0,0), 1.0); }
-}
-Circ Circ(pair O, real r) {
-	Circ c = new Circ;
-	c.O = O;
-	c.r = r;
-	return c;
-}
-Circ operator cast(pair P) { return Circ(P, 0); }
-pair operator cast(Circ c) { return c.O; }
-path operator cast(Circ c) { return Circle(c.O, c.r); }
-Circ Circ(pair P) { return Circ(P, 1.0); }
-Circ Circ(pair P, pair Q) { return Circ(P, abs(Q-P)); }
-Circ Circ() { return Circ((0,0)); }
-
-// fixes complaints about ambiguity
-Circ Circ(pair P, int r) { return Circ(P, (real)r); }
-
-// Radian
-path carc(pair O, real r, real alpha, real beta) {
-	return arc(O, r, degrees(alpha), degrees(beta));
-}
-path carc(pair O, real r, real alpha) {
-	return carc(O, r, 0, alpha);
-}
-path carc(Circ c, real alpha, real beta) {
-	return arc(c.O, c.r, degrees(alpha), degrees(beta));
-}
-path carc(Circ c, real alpha) {
-	return carc(c, 0, alpha);
-}
-pair invert(pair P, Circ c) {
-	return c.O + unit(P-c.O)*c.r**2/(abs(P-c.O)**2);
-}
-
-Circ Circ(pair A, pair B) { return Circ(A, abs(B-A)); }
-Circ Circ(pair A, pair B, pair C) {
-	return Circ(circumcenter(A,B,C),circumradius(A,B,C));
-}
-Circ incircle(pair A, pair B, pair C) {
-	return Circ(incenter(A,B,C),inradius(A,B,C));
-}
-Circ excircle(pair A, pair B, pair C) {
-	return Circ(excenter(A,B,C),exradius(A,B,C));
-}
-Circ Circ(pair A, pair B, pair C) {
-	return Circ(circumcenter(A,B,C),circumradius(A,B,C));
-}
-
-bool are_cyclic(pair A, pair B, pair C, pair D) {
-	pair O1, O2;
-	O1 = circumcenter(A,B,C);
-	O2 = circumcenter(A,B,D);
-	return abs(O1.x-O2.x) < 1/10^(5)
-		&& abs(O1.y-O2.y) < 1/10^(5);
-}
-pair[] cut(pair A, pair B, Circ c)
-{
-	return intersectionpoints(A--B, c);
-}
-
-pair[] cut(Circ c, pair A, pair B)
-{
-	return intersectionpoints(A--B, c);
-}
-
-pair[] circumscribe(pair O, real r, pair[] pts) {
-	if (pts.length == 2) {
-		return null;
-	}
-	real R = circumradius(pts[0], pts[1], pts[2]);
-	pair O2 = circumcenter(pts[0], pts[1], pts[2]);
-	return shift(O-O2) * scale(r/R) * pts;
-}
+include "./geo-modules/circle.asy";
 
 // SSS construction around circle
 pair[] tri_sss(real a, real b, real c, pair O=(0,0)) {
@@ -472,7 +373,6 @@ pair[] dirtangent(Circ c, Circ d, real sn=1) {
 	pair Q=B+sn*s*expi(acos((r-sn*s)/d))*unit(B-A);
 	return new pair[] {P,Q};
 }
-
 
 // Polygons
 pair[] polygon(int n){
