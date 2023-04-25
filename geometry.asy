@@ -402,15 +402,17 @@ struct point
 	coordsys coordsys;/*<asyxml></code><documentation>The coordinate system of this point.</documentation></property><property type = "pair" signature="coordinates"><code></asyxml>*/
 	restricted pair coordinates;/*<asyxml></code><documentation>The coordinates of this point relatively to the coordinate system 'coordsys'.</documentation></property><property type = "real" signature="x, y"><code></asyxml>*/
 	restricted real x, y;/*<asyxml></code><documentation>The xpart and the ypart of 'coordinates'.</documentation></property></asyxml>*/
+	restricted real direction; // direction of a point in infinity
 	/*<asyxml><method type = "" signature="init(coordsys,pair)"><code><property type = "real" signature="m"><code></asyxml>*/
 	real m = 1;/*<asyxml></code><documentation>Used to cast mass<->point.</documentation></property></asyxml>*/
-	void init(coordsys R, pair coordinates, real mass)
+	void init(coordsys R, pair coordinates, real mass, real dir=0)
 	{/*<asyxml></code><documentation>The constructor.</documentation></method></asyxml>*/
 		this.coordsys = R;
 		this.coordinates = coordinates;
 		this.x = coordinates.x;
 		this.y = coordinates.y;
 		this.m = mass;
+		this.direction = dir;
 	}
 }/*<asyxml></struct></asyxml>*/
 
@@ -438,6 +440,21 @@ point point(coordsys R, explicit point M, real m = M.m)
 	 Do not confuse this routine with the further routine 'changecoordsys'.</documentation></function></asyxml>*/
 	point op;
 	op.init(R, M.coordinates, M.m);
+	return op;
+}
+
+/*<asyxml><function type="point" signature="point(coordsys,explicit point,real)"><code></asyxml>*/
+point point(coordsys R, explicit point M, real m = M.m)
+{/*<asyxml></code><documentation>Return the point of 'R' which has the coordinates of 'M' and the mass 'm'.
+	 Do not confuse this routine with the further routine 'changecoordsys'.</documentation></function></asyxml>*/
+	point op;
+	op.init(R, M.coordinates, M.m);
+	return op;
+}
+
+point inftypoint(point base, real direction) {
+	point op;
+	op.init(currentcoordsys, base.coordinates, base.m, direction);
 	return op;
 }
 
@@ -1023,6 +1040,25 @@ bool operator ==(explicit vector u, explicit vector v)
 bool collinear(vector u, vector v)
 {/*<asyxml></code><documentation>Return 'true' iff the vectors 'u' and 'v' are collinear.</documentation></function></asyxml>*/
  return abs(ypart((conj((pair)u) * (pair)v))) < EPS;
+}
+
+// symbolic
+bool are_concurrent(pair A, pair B, pair C, pair D, pair E, pair F) {
+	return (extension(A,B,C,D) == (infinity,infinity) // parallel case
+		 && (infinity,infinity)==extension(C,D,E,F))
+		 || (abs(extension(A,B,C,D).x-extension(C,D,E,F).x) < 1/10^(5)
+		 && abs(extension(A,B,C,D).y-extension(C,D,E,F).y) < 1/10^(5)
+		 );
+}
+
+bool are_collinear(pair A, pair B, pair C) {
+	return A == B || B == C || C == A
+			|| abs(unit(C-A)-unit(A-B)) < 1/10^5
+			|| abs(unit(B-A)+unit(C-A)) < 1/10^5;
+}
+
+bool are_parallel(pair A, pair B, pair C, pair D) {
+	return collinear(B-A, D-C);
 }
 
 /*<asyxml><function type="vector" signature="unit(point)"><code></asyxml>*/
@@ -3159,7 +3195,7 @@ circle operator cast(point P)
 }
 point operator cast(circle c)
 {
-	return c.O;
+	return c.C;
 }
 
 /*<asyxml><function type="circle" signature="circle(point,point)"><code></asyxml>*/
@@ -3198,30 +3234,73 @@ circle circle_d(segment s)
 	return circle_d(s.A, s.B);
 }
 
+// Barycentric coordinates
+point bary(point A, point B, point C, real x, real y, real z) {
+	real k = x+y+z;
+	x /= k;
+	y /= k;
+	z /= k;
+	return x*A + y*B + z*C;
+}
+
+real[] angles_sss(real a, real b, real c) {
+	real alpha = acos((b*b+c*c-a*a)/(2*b*c));
+	real beta = acos((c*c+a*a-b*b)/(2*c*a));
+	real gamma = pi-alpha-beta;
+	return new real[] {alpha, beta, gamma};
+}
+
+real[] angles_sss(point A, point B, point C) {
+	return angles_sss(abs(B-C), abs(C-A), abs(A-B));
+}
+
+point bary(point A, point B, point C, real f(real, real, real)) {
+	real[] angles = angles_sss(A,B,C);
+	real aa = angles[0];
+	real bb = angles[1];
+	real cc = angles[2];
+	real x = f(aa, bb, cc);
+	real y = f(bb, cc, aa);
+	real z = f(cc, aa, bb);
+	real k = x+y+z;
+	x /= k;
+	y /= k;
+	z /= k;
+	return x*A + y*B + z*C;
+}
+
+real circumradius(real a, real b, real c) {
+	return a*b*c/sqrt((a+b+c)*(-a+b+c)*(a-b+c)*(a+b-c));
+}
+
+real circumradius(point A, point B, point C) {
+	return circumradius(abs(B-C), abs(C-A), abs(A-B));
+}
+
 /*<asyxml><function type="point" signature="circumcenter(point,point,point)"><code></asyxml>*/
 point circumcenter(point A, point B, point C)
 {/*<asyxml></code><documentation>Return the circumcenter of triangle ABC.</documentation></function></asyxml>*/
+	real f(real, real, real) = new real(real a, real b, real c) {
+		return sin(2*a);
+	};
+	pair O = bary(A,B,C,f);
 	point[] P = standardizecoordsys(A, B, C);
 	coordsys R = P[0].coordsys;
-	pair a = A, b = B, c = C;
-	pair mAB = (a + b)/2;
-	pair mAC = (a + c)/2;
-	pair pp = extension(mAB, rotate(90, mAB) * a, mAC, rotate(90, mAC) * c);
-	return point(R, pp/R);
+	return point(R, O/R);
 }
 
 /*<asyxml><function type="circle" signature="circle(point,point,point)"><code></asyxml>*/
 circle circle(point A, point B, point C)
 {/*<asyxml></code><documentation>Return the circumcircle of the triangle ABC.</documentation></function></asyxml>*/
-	if (collinear(A - B, A - C)) {
-		circle oc;
-		oc.r = infinity;
-		oc.C = (A + B + C)/3;
-		oc.l = line(oc.C, oc.C == A ? B : A);
-		return oc;
+	if (!collinear(A - B, A - C)) {
+		point c = circumcenter(A, B, C);
+		return circle(c, abs(c - A));
 	}
-	point c = circumcenter(A, B, C);
-	return circle(c, abs(c - A));
+	circle oc;
+	oc.r = infinity;
+	oc.C = (A + B + C)/3;
+	oc.l = line(oc.C, oc.C == A ? B : A);
+	return oc;
 }
 
 /*<asyxml><function type="circle" signature="circumcircle(point,point,point)"><code></asyxml>*/
@@ -6876,6 +6955,27 @@ point[] intersectionpoints(circle c1, circle c2)
 	return (c1.C == c2.C) ?
 		new point[] :
 		intersectionpoints(radicalline(c1, c2), c1);
+}
+
+// Aliases for intersectionpoints
+pair[] cut(point A, point B, circle c)
+{
+	return intersectionpoints(line(A,B), c);
+}
+
+pair[] cut(circle c, point A, point B)
+{
+	return intersectionpoints(line(A,B), c);
+}
+
+pair[] cut(circle c, line l) {
+	return intersectionpoints(l, c);
+}
+
+pair cut(point A, point B, point C, point D) {
+	if (are_parallel(A,B,C,D))
+		return point((A+B+C+D)/4, angle(B-A));
+	return extension(A,B,C,D);
 }
 
 /*<asyxml><function type="line" signature="tangent(circle,abscissa)"><code></asyxml>*/
