@@ -1,8 +1,5 @@
-// geometry.asy
-
 // Copyright (C) 2007
 // Author: Philippe IVALDI 2007/09/01
-// http://www.piprime.fr/
 
 // This program is free software ; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -14,19 +11,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program ; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-
-// COMMENTARY:
-// An Asymptote geometry module.
-
 // THANKS:
 // Special thanks to Olivier Guibe for his help in mathematical issues.
-
-// BUGS:
-
-// CODE:
 
 import math;
 import markers;
@@ -38,7 +24,7 @@ real Infinity=1.0/(1000*realEpsilon);
 private transform rotate(explicit pair dir)
 {
 	real angle=degrees(dir);
-	if(angle > 90 && angle < 270) angle -= 180;
+	if (angle > 90 && angle < 270) angle -= 180;
 	return rotate(angle);
 }
 
@@ -60,7 +46,7 @@ void addMargins(picture pic = currentpicture,
 	 arrowheads) will be ignored.</documentation></function></asyxml>*/
 	pair m = allObject ? truepoint(pic, SW) : point(pic, SW);
 	pair M = allObject ? truepoint(pic, NE) : point(pic, NE);
-	if(rigid) {
+	if (rigid) {
 		draw(m - inverse(pic.calculateTransform()) * (lmargin, bmargin), invisible);
 		draw(M + inverse(pic.calculateTransform()) * (rmargin, tmargin), invisible);
 	} else pic.addBox(m, M, -(lmargin, bmargin), (rmargin, tmargin));
@@ -69,8 +55,8 @@ void addMargins(picture pic = currentpicture,
 real approximate(real t)
 {
 	real ot = t;
-	if(abs(t - ceil(t)) < epsgeo) ot = ceil(t);
-	else if(abs(t - floor(t)) < epsgeo) ot = floor(t);
+	if (abs(t - ceil(t)) < epsgeo) ot = ceil(t);
+	else if (abs(t - floor(t)) < epsgeo) ot = floor(t);
 	return ot;
 }
 
@@ -98,7 +84,7 @@ real rf(real x, real y, real z)
 		C3 = 3/44,
 		C4 = 1/14;
 	real alamb, ave, delx, dely, delz, e2, e3, sqrtx, sqrty, sqrtz, xt, yt, zt;
-	if(min(x, y, z) < 0 || min(x + y, x + z, y + z) < TINY ||
+	if (min(x, y, z) < 0 || min(x + y, x + z, y + z) < TINY ||
 		 max(x, y, z) > BIG) abort("rf: invalid arguments.");
 	xt = x;
 	yt = y;
@@ -232,7 +218,7 @@ pair[] intersectionpoints(pair A, pair B, real[] equation)
 {/*<asyxml></code><documentation>Return the intersection points of the line AB with
 	 the conic whose an equation is
 	 equation[0] * x^2 + equation[1] * x * y + equation[2] * y^2 + equation[3] * x + equation[4] * y + equation[5] = 0</documentation></function></asyxml>*/
-	if(equation.length != 6) abort("intersectionpoints: bad length of array for a conic equation.");
+	if (equation.length != 6) abort("intersectionpoints: bad length of array for a conic equation.");
 	return intersectionpoints(A, B, equation[0], equation[1], equation[2],
 														equation[3], equation[4], equation[5]);
 }
@@ -385,7 +371,7 @@ path operator *(coordsys R, path g)
 		 pair P = R * point(g, i);
 		 pair post = R * postcontrol(g, i - 1);
 		 pair pre = R * precontrol(g, i);
-		 if(i == l && (cyclic(g)))
+		 if (i == l && (cyclic(g)))
 			 og = og..controls post and pre..cycle;
 		 else
 			 og = og..controls post and pre..P;
@@ -479,10 +465,10 @@ bool samecoordsys(bool warn = true ... point[] M)
 	coordsys t = M[0].coordsys;
 	for (int i = 1; i < M.length; ++i) {
 		ret = (t == M[i].coordsys);
-		if(!ret) break;
+		if (!ret) break;
 		t = M[i].coordsys;
 	}
-	if(warn && !ret)
+	if (warn && !ret)
 		warning("coodinatesystem",
 						"the coordinate system of two objects are not the same.
 The operation will be done relative to the default coordinate system.");
@@ -496,7 +482,7 @@ point[] standardizecoordsys(coordsys R = currentcoordsys,
 	 If 'warn' is true and the coordinate systems are different, a warning is sent.</documentation></function></asyxml>*/
 	point[] op = new point[];
 	op = M;
-	if(!samecoordsys(warn ... M))
+	if (!samecoordsys(warn ... M))
 		for (int i = 1; i < M.length; ++i)
 			op[i] = changecoordsys(R, M[i]);
 	return op;
@@ -680,8 +666,8 @@ void dot(picture pic = currentpicture, Label L, explicit point Z,
 {/*<asyxml></code><documentation></documentation></function></asyxml>*/
  Label L = L.copy();
  L.position(locate(Z));
- if(L.s == "") {
-	 if(format == "") format = defaultformat;
+ if (L.s == "") {
+	 if (format == "") format = defaultformat;
 	 L.s = "("+format(format, Z.x)+", "+format(format, Z.y)+")";
  }
  L.align(align, E);
@@ -1015,7 +1001,7 @@ vector operator +(explicit vector v1, explicit vector v2)
 	 If the two vector haven't the same coordinate system, the returned
 	 vector is relative to the default coordinate system (without warning).</documentation></operator></asyxml>*/
  coordsys R = v1.v.coordsys;
- if(samecoordsys(false, v1, v2)){R = defaultcoordsys;}
+ if (samecoordsys(false, v1, v2)){R = defaultcoordsys;}
  return vector(R, (locate(v1) + locate(v2))/R);
 }
 
@@ -1183,8 +1169,8 @@ private void Drawline(picture pic = currentpicture, Label L = "", pair P, bool d
 			real cp = dirP ? 1:0;
 			real cq = dirQ ? 1:0;
 			// Handle horizontal and vertical lines.
-			if(v.x == 0) {
-				if(m.x <= z.x && z.x <= M.x)
+			if (v.x == 0) {
+				if (m.x <= z.x && z.x <= M.x)
 					if (dot(v, m - z) < 0) {
 						ptp = (z.x, z.y + cp * (m.y - z.y));
 						ptq = (z.x, q.y + cq * (M.y - q.y));
@@ -1192,7 +1178,7 @@ private void Drawline(picture pic = currentpicture, Label L = "", pair P, bool d
 						ptq = (z.x, q.y + cq * (m.y - q.y));
 						ptp = (z.x, z.y + cp * (M.y - z.y));
 					}
-			} else if(v.y == 0) {
+			} else if (v.y == 0) {
 				if (dot(v, m - z) < 0) {
 					ptp = (z.x + cp * (m.x - z.x), z.y);
 					ptq = (q.x + cq * (M.x - q.x), z.y);
@@ -1209,7 +1195,7 @@ private void Drawline(picture pic = currentpicture, Label L = "", pair P, bool d
 				real tmax = min(v.x > 0 ? Mx : mx, v.y > 0 ? My : my);
 				pair pmin = z + tmin * v;
 				pair pmax = z + tmax * v;
-				if(tmin <= tmax) {
+				if (tmin <= tmax) {
 					ptp = z + cp * tmin * v;
 					ptq = z + (cq == 0 ? v:tmax * v);
 				}
@@ -1217,14 +1203,14 @@ private void Drawline(picture pic = currentpicture, Label L = "", pair P, bool d
 			path g = ptp--ptq;
 			if (length(g)>0)
 				{
-					if(L.s != "") {
+					if (L.s != "") {
 						Label lL = L.copy();
-						if(L.defaultposition) lL.position(Relative(.9));
+						if (L.defaultposition) lL.position(Relative(.9));
 						lL.p(p);
 						lL.out(opic, g);
 					}
 					g = pathModifier(g);
-					if(linetype(p).length == 0){
+					if (linetype(p).length == 0){
 						pair m = midpoint(g);
 						pen tp;
 						tp = dirP ? p : addpenline(p);
@@ -1248,7 +1234,7 @@ void clipdraw(picture pic = currentpicture, Label L = "", path g,
 							real xmargin = 0, real ymargin = xmargin,
 							Label legend = "", marker marker = nomarker)
 {/*<asyxml></code><documentation>Draw the path 'g' on 'pic' clipped to the bounding box of 'pic'.</documentation></function></asyxml>*/
-	if(L.s != "") {
+	if (L.s != "") {
 		picture tmp;
 		label(tmp, L, g, p);
 		add(pic, tmp);
@@ -1280,7 +1266,7 @@ void distance(picture pic = currentpicture, Label L = "", point A, point B,
 			transform T = rotated ? rotate(B - A) : id;
 			Label L = L.copy();
 			L.align(L.align, Center);
-			if(abs(ypart((conj(A - B) * L.align.dir))) < epsgeo && L.filltype == NoFill)
+			if (abs(ypart((conj(A - B) * L.align.dir))) < epsgeo && L.filltype == NoFill)
 				L.filltype = UnFill(1);
 			draw(opic, T * L, G, p, arrow, Bars, PenMargins);
 			pair Ap = t * A, Bp = t * B;
@@ -1303,14 +1289,14 @@ void perpendicularmark(picture pic = currentpicture, point z,
 	 relative to the path z--z + dir.
 	 dir(45 + n * 90), where n in N*, are common values for 'align'.</documentation></function></asyxml>*/
 	p = squarecap + miterjoin + p;
-	if(size == 0) size = perpfactor * 3mm + linewidth(p) / 2;
+	if (size == 0) size = perpfactor * 3mm + linewidth(p) / 2;
 	frame apic;
 	pair d1 = size * align * unit(dir) * dir(-45);
 	pair d2 = I * d1;
 	path g = d1--d1 + d2--d2;
 	g = margin(g, p).g;
 	draw(apic, g, p);
-	if(filltype != NoFill) filltype.fill(apic, (relpoint(g, 0) - relpoint(g, 0.5)+
+	if (filltype != NoFill) filltype.fill(apic, (relpoint(g, 0) - relpoint(g, 0.5)+
 																							relpoint(g, 1))--g--cycle, p + solid);
 	add(pic, apic, locate(z));
 }
@@ -1382,7 +1368,7 @@ bool simeq(point a, real b, real fuzz = epsgeo)
 pair attract(pair m, path g, real fuzz = 0)
 {/*<asyxml></code><documentation>Return the nearest point (A PAIR) of 'm' which is on the path g.
 	 'fuzz' is the argument 'fuzz' of 'intersect'.</documentation></function></asyxml>*/
-	if(intersect(m, g, fuzz).length > 0) return m;
+	if (intersect(m, g, fuzz).length > 0) return m;
 	pair p;
 	real step = 1, r = 0;
 	real[] t;
@@ -1396,7 +1382,7 @@ pair attract(pair m, path g, real fuzz = 0)
 	while(rM - rm > eps) {
 		r = (rm + rM)/2;
 		t = intersect(shift(m) * scale(r) * unitcircle, g, fuzz);
-		if(t.length <= 0) {
+		if (t.length <= 0) {
 			rm = r;
 		} else {
 			rM = r;
@@ -1933,7 +1919,7 @@ point intersectionpoint(line l1, line l2)
 	point[] P = standardizecoordsys(l1.A, l1.B, l2.A, l2.B);
 	coordsys R = P[0].coordsys;
 	pair p = extension(P[0], P[1], P[2], P[3]);
-	if(finite(p)){
+	if (finite(p)){
 		point p = point(R, p/R);
 		if (p @ l1 && p @ l2) return p;
 	}
@@ -2103,7 +2089,7 @@ line bisector(line l1, line l2, real angle = 0, bool sharp = true)
 	if (l1 == l2) return l1;
 	point A = intersectionpoint(l1, l2);
 	if (finite(A)) {
-		if(sharp) ol = rotate(sharpdegrees(l1, l2)/2 + angle, A) * l1;
+		if (sharp) ol = rotate(sharpdegrees(l1, l2)/2 + angle, A) * l1;
 		else {
 			coordsys R = coordsys(l1);
 			pair a = A, b = A + l1.u, c = A + l2.u;
@@ -2127,7 +2113,7 @@ line sector(int n = 2, int p = 1, line l1, line l2, real angle = 0, bool sharp =
 	if (l1 == l2) return l1;
 	point A = intersectionpoint(l1, l2);
 	if (finite(A)) {
-		if(sharp) ol = rotate(p * sharpdegrees(l1, l2)/n + angle, A) * l1;
+		if (sharp) ol = rotate(p * sharpdegrees(l1, l2)/n + angle, A) * l1;
 		else {
 			ol = rotate(p * degrees(l1, l2)/n + angle, A) * l1;
 		}
@@ -2190,7 +2176,7 @@ void draw(picture pic = currentpicture, Label L = "",
 	 The boolean parameters control the infinite section.
 	 The global variable 'linemargin' (default value is 0) allows to modify
 	 the bounding box in which the line must be drawn.</documentation></function></asyxml>*/
-	if(!(dirA || dirB)) draw(l.A--l.B, invisible);// l is a segment.
+	if (!(dirA || dirB)) draw(l.A--l.B, invisible);// l is a segment.
 	Drawline(pic, L, l.A, dirP = dirA, l.B, dirQ = dirB,
 					 align, p, arrow,
 					 legend, marker, pathModifier);
@@ -2412,7 +2398,7 @@ bqe bqe(point M1, point M2, point M3, point M4, point M5)
 		M[i] = new real[] {pts[i].x * pts[i].y, pts[i].y^2, pts[i].x, pts[i].y, 1};
 		x[i] = pts[i].x^2;
 	}
-	if(abs(determinant(M)) < 1e-5) {// Try c = -1
+	if (abs(determinant(M)) < 1e-5) {// Try c = -1
 		for (int i = 0; i < 5; ++i) {
 			M[i] = new real[] {pts[i].x^2, pts[i].x * pts[i].y, pts[i].x, pts[i].y, 1};
 			x[i] = pts[i].y^2;
@@ -2434,10 +2420,10 @@ bool samecoordsys(bool warn = true ... bqe[] bqes)
 	coordsys t = bqes[0].coordsys;
 	for (int i = 1; i < bqes.length; ++i) {
 		ret = (t == bqes[i].coordsys);
-		if(!ret) break;
+		if (!ret) break;
 		t = bqes[i].coordsys;
 	}
-	if(warn && !ret)
+	if (warn && !ret)
 		warning("coodinatesystem",
 						"the coordinate system of two bivariate quadratic equations are not
 the same. The operation will be done relatively to the default coordinate
@@ -2460,24 +2446,24 @@ real[] realquarticroots(real a, real b, real c, real d, real e)
 	{
 		bool exist = false;
 		for (int i = 0; i < roots.length; ++i) {
-			if(abs(roots[i]-x) < 1e-5) {exist = true; break;}
+			if (abs(roots[i]-x) < 1e-5) {exist = true; break;}
 		}
-		if(!exist) roots.push(x);
+		if (!exist) roots.push(x);
 	}
 	for(int i = 0; i < zroots.length; ++i) {
-		if(zroots[i].y == 0 || abs(p(zroots[i].x)) < Fuzz) addroot(zroots[i].x);
+		if (zroots[i].y == 0 || abs(p(zroots[i].x)) < Fuzz) addroot(zroots[i].x);
 		else {
-			if(abs(zroots[i].y) < 1e-3) {
+			if (abs(zroots[i].y) < 1e-3) {
 				x = zroots[i].x;
 				search = true;
 				n = 200;
 				while(search) {
 					real tx = abs(p(x)) < Fuzz ? x : newton(iterations = n, p, prime, x);
-					if(tx < realMax) {
-						if(abs(p(tx)) < Fuzz) {
+					if (tx < realMax) {
+						if (abs(p(tx)) < Fuzz) {
 							addroot(tx);
 							search = false;
-						} else if(n < 200) n *=2;
+						} else if (n < 200) n *=2;
 						else {
 							search = false;
 						}
@@ -2514,7 +2500,7 @@ conic conic(point F, line l, real e)
 	 If the coordinate system of 'F' and 'l' are not identical, the conic is
 	 attached to 'defaultcoordsys'.
 	 DOC*/
-	if(e < 0) abort("conic: 'e' can't be negative.");
+	if (e < 0) abort("conic: 'e' can't be negative.");
 	conic oc;
 	point[] P = standardizecoordsys(F, l.A, l.B);
 	line ll;
@@ -2543,7 +2529,7 @@ bool degenerate(circle c)
 }
 
 line line(circle c){
-	if(finite(c.r)) abort("Circle can not be casted to line here.");
+	if (finite(c.r)) abort("Circle can not be casted to line here.");
 	return c.l;
 }
 
@@ -2566,7 +2552,7 @@ struct ellipse
 		this.C = (P[0] + P[1])/2;
 		this.angle = degrees(F2 - F1, warn=false);
 		this.a = a;
-		if(!finite(a)) {
+		if (!finite(a)) {
 			this.l = line(P[0], P[1]);
 			this.b = infinity;
 			this.e = 0;
@@ -2575,7 +2561,7 @@ struct ellipse
 			this.c = abs(C - P[0]);
 			this.b = this.c < epsgeo ? a : sqrt(a^2 - c^2); // Handle case of circle.
 			this.e = this.c < epsgeo ? 0 : this.c/a; // Handle case of circle.
-			if(this.e >= 1) abort("ellipse.init: wrong parameter: e >= 1.");
+			if (this.e >= 1) abort("ellipse.init: wrong parameter: e >= 1.");
 			this.p = a * (1 - this.e^2);
 			if (this.c != 0) {// directrix is not set for a circle.
 				point A = this.C + (a^2/this.c) * unit(P[0]-this.C);
@@ -2637,7 +2623,7 @@ struct hyperbola
 		this.a = a;
 		this.c = abs(C - P[0]);
 		this.e = this.c/a;
-		if(this.e <= 1) abort("hyperbola.init: wrong parameter: e <= 1.");
+		if (this.e <= 1) abort("hyperbola.init: wrong parameter: e <= 1.");
 		this.b = a * sqrt(this.e^2 - 1);
 		this.p = a * (this.e^2 - 1);
 		point A = this.C + (a^2/this.c) * unit(P[0]-this.C);
@@ -2694,7 +2680,7 @@ int ellipsenodesnumber(real a, real b, real angle1, real angle2, bool dir)
 {/*<asyxml></code><documentation>Return the number of nodes to draw an ellipse arc.</documentation></function></asyxml>*/
 	real d;
 	real da = angle2 - angle1;
-	if(dir) {
+	if (dir) {
 		d = angle1 < angle2 ? da : 360 + da;
 	} else {
 		d = angle1 < angle2 ? -360 + da : da;
@@ -2789,9 +2775,9 @@ path arcfromfocus(conic co, real angle1, real angle2, int n = 400, bool directio
 	real a, r;
 	for (int i = 0; i < n; ++i) {
 		a = a1 + i * step;
-		if(co.e >= 1) {
+		if (co.e >= 1) {
 			r = 1 - co.e * cos(a);
-			if(r > epsgeo) {
+			if (r > epsgeo) {
 				r = co.p/r;
 				op = op--Rp * Rp.polar(r, a);
 			}
@@ -2800,7 +2786,7 @@ path arcfromfocus(conic co, real angle1, real angle2, int n = 400, bool directio
 			op = op..Rp * Rp.polar(r, a);
 		}
 	}
-	if(co.e < 1 && abs(abs(a2 - a1) - 2 * pi) < epsgeo) op = (path)op..cycle;
+	if (co.e < 1 && abs(abs(a2 - a1) - 2 * pi) < epsgeo) op = (path)op..cycle;
 
 	return (direction ? op : op == nullpath ? op :reverse(op));
 }
@@ -2820,7 +2806,7 @@ point angpoint(conic co, real angle)
 /*<asyxml><operator type = "bool" signature="@(point,conic)"><code></asyxml>*/
 bool operator @(point M, conic co)
 {/*<asyxml></code><documentation>Return true iff 'M' on 'co'.</documentation></operator></asyxml>*/
-	if(co.e == 0) return abs(abs(co.F - M) - co.p) < 10 * epsgeo;
+	if (co.e == 0) return abs(abs(co.F - M) - co.p) < 10 * epsgeo;
 	return abs(co.e * distance(M, co.D) - abs(co.F - M)) < 10 * epsgeo;
 }
 
@@ -2833,7 +2819,7 @@ coordsys coordsys(ellipse el)
 /*<asyxml><function type="coordsys" signature="canonicalcartesiansystem(ellipse)"><code></asyxml>*/
 coordsys canonicalcartesiansystem(ellipse el)
 {/*<asyxml></code><documentation>Return the canonical cartesian system of the ellipse 'el'.</documentation></function></asyxml>*/
-	if(degenerate(el)) return cartesiansystem(el.l.A, el.l.u, el.l.v);
+	if (degenerate(el)) return cartesiansystem(el.l.A, el.l.u, el.l.v);
 	pair O = locate(el.C);
 	pair i = el.e == 0 ? el.C.coordsys.i : unit(locate(el.F1) - O);
 	pair j = rotate(90) * i;
@@ -2880,7 +2866,7 @@ hyperbola hyperbola(point P1, point P2, real ae, bool byfoci = byfoci)
 	 else return the hyperbola whose vertexes are 'P1' and 'P2' with eccentricity 'ae'.</documentation></function></asyxml>*/
 	hyperbola oh;
 	point[] P = standardizecoordsys(P1, P2);
-	if(byfoci) {
+	if (byfoci) {
 		oh.init(P[0], P[1], ae);
 	} else {
 		real a = abs(P[0]-P[1])/2;
@@ -2906,11 +2892,11 @@ ellipse ellipse(point C, real a, real b, real angle = 0)
 	ellipse oe;
 	coordsys R = C.coordsys;
 	angle += degrees(R.i);
-	if(a < b) {angle += 90; real tmp = a; a = b; b = tmp;}
-	if(finite(a) && finite(b)) {
+	if (a < b) {angle += 90; real tmp = a; a = b; b = tmp;}
+	if (finite(a) && finite(b)) {
 		real c = sqrt(abs(a^2 - b^2));
 		point f1, f2;
-		if(abs(a - b) < epsgeo) {
+		if (abs(a - b) < epsgeo) {
 			f1 = C; f2 = C;
 		} else {
 			f1 = point(R, (locate(C) + rotate(angle) * (-c, 0))/R);
@@ -2918,7 +2904,7 @@ ellipse ellipse(point C, real a, real b, real angle = 0)
 		}
 		oe.init(f1, f2, a);
 	} else {
-		if(finite(b) || !finite(a)) oe.init(C, C + R.polar(1, angle), infinity);
+		if (finite(b) || !finite(a)) oe.init(C, C + R.polar(1, angle), infinity);
 		else oe.init(C, C + R.polar(1, 90 + angle), infinity);
 	}
 	return oe;
@@ -2936,19 +2922,19 @@ ellipse ellipse(bqe bqe)
 	string message = "ellipse: the given equation is not an equation of an ellipse.";
 	real u = b^2 * g + d^2 * c + f^2 * a;
 	real delta = a * c * g + b * f * d + d * b * f - u;
-	if(abs(delta) < epsgeo) abort(message);
+	if (abs(delta) < epsgeo) abort(message);
 	real j = b^2 - a * c;
 	real i = a + c;
 	real dd = j * (sgnd(c - a) * sqrt((a - c)^2 + 4 * (b^2)) - c-a);
 	real ddd = j * (-sgnd(c - a) * sqrt((a - c)^2 + 4 * (b^2)) - c-a);
 
-	if(abs(ddd) < epsgeo || abs(dd) < epsgeo ||
+	if (abs(ddd) < epsgeo || abs(dd) < epsgeo ||
 		 j >= -epsgeo || delta/sgnd(i) > 0) abort(message);
 
 	real x = (c * d - b * f)/j, y = (a * f - b * d)/j;
 	// real dir = abs(b) < epsgeo ? 0 : pi/2-0.5 * acot(0.5 * (c-a)/b);
 	real dir = abs(b) < epsgeo ? 0 : 0.5 * acot(0.5 * (c - a)/b);
-	if(dir * (c - a) * b < 0) dir = dir < 0 ? dir + pi/2 : dir - pi/2;
+	if (dir * (c - a) * b < 0) dir = dir < 0 ? dir + pi/2 : dir - pi/2;
 	real cd = cos(dir), sd = sin(dir);
 	real t = a * cd^2 - 2 * b * cd * sd + c * sd^2;
 	real tt = a * sd^2 + 2 * b * cd * sd + c * cd^2;
@@ -3031,9 +3017,9 @@ parabola parabola(bqe bqe)
 	real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];
 	string message = "parabola: the given equation is not an equation of a parabola.";
 	real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);
-	if(abs(delta) < 10 * epsgeo || abs(b^2 - a * c) > 10 * epsgeo) abort(message);
+	if (abs(delta) < 10 * epsgeo || abs(b^2 - a * c) > 10 * epsgeo) abort(message);
 	real dir = abs(b) < epsgeo ? 0 : 0.5 * acot(0.5 * (c - a)/b);
-	if(dir * (c - a) * b < 0) dir = dir < 0 ? dir + pi/2 : dir - pi/2;
+	if (dir * (c - a) * b < 0) dir = dir < 0 ? dir + pi/2 : dir - pi/2;
 	real cd = cos(dir), sd = sin(dir);
 	real ap = a * cd^2 - 2 * b * cd * sd + c * sd^2;
 	real cp = a * sd^2 + 2 * b * cd * sd + c * cd^2;
@@ -3126,7 +3112,7 @@ hyperbola hyperbola(bqe bqe)
 	real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];
 	string message = "hyperbola: the given equation is not an equation of a hyperbola.";
 	real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);
-	if(abs(delta) < 10 * epsgeo || abs(b^2 - a * c) < 0) abort(message);
+	if (abs(delta) < 10 * epsgeo || abs(b^2 - a * c) < 0) abort(message);
 	real dir = abs(b) < epsgeo ? 0 : 0.5 * acot(0.5 * (c - a)/b);
 	real cd = cos(dir), sd = sin(dir);
 	real ap = a * cd^2 - 2 * b * cd * sd + c * sd^2;
@@ -3140,7 +3126,7 @@ hyperbola hyperbola(bqe bqe)
 	point C = point(R, ((c * d - b * f)/j, (a * f - b * d)/j)/R);
 	real aa = gp/ap, bb = gp/cp;
 	real a = sqrt(abs(aa)), b = sqrt(abs(bb));
-	if(aa < 0) {dir -= pi/2; aa = a; a = b; b = aa;}
+	if (aa < 0) {dir -= pi/2; aa = a; a = b; b = aa;}
 	return hyperbola(C, a, b, degrees(-dir - angle(R.i)));
 }
 
@@ -3162,7 +3148,7 @@ circle circle(explicit point C, real r)
 	circle oc = new circle;
 	oc.C = C;
 	oc.r = r;
-	if(!finite(r)) oc.l = line(C, C + vector(C.coordsys, (1, 0)));
+	if (!finite(r)) oc.l = line(C, C + vector(C.coordsys, (1, 0)));
 	return oc;
 }
 
@@ -3172,14 +3158,14 @@ circle circle(point A, point B)
 	real r;
 	circle oc;
 	real a = abs(A), b = abs(B);
-	if(finite(a) && finite(b)) {
+	if (finite(a) && finite(b)) {
 		oc = circle((A + B)/2, abs(A - B)/2);
 	} else {
 		oc.r = infinity;
-		if(finite(abs(A))) oc.l = line(A, A + unit(B));
+		if (finite(abs(A))) oc.l = line(A, A + unit(B));
 		else {
-			if(finite(abs(B))) oc.l = line(B, B + unit(A));
-			else if(finite(abs(A - B)/2)) oc = circle((A + B)/2, abs(A - B)/2); else
+			if (finite(abs(B))) oc.l = line(B, B + unit(A));
+			else if (finite(abs(A - B)/2)) oc = circle((A + B)/2, abs(A - B)/2); else
 				oc.l = line(A, B);
 		}
 	}
@@ -3207,7 +3193,7 @@ point circumcenter(point A, point B, point C)
 /*<asyxml><function type="circle" signature="circle(point,point,point)"><code></asyxml>*/
 circle circle(point A, point B, point C)
 {/*<asyxml></code><documentation>Return the circumcircle of the triangle ABC.</documentation></function></asyxml>*/
-	if(collinear(A - B, A - C)) {
+	if (collinear(A - B, A - C)) {
 		circle oc;
 		oc.r = infinity;
 		oc.C = (A + B + C)/3;
@@ -3298,7 +3284,7 @@ circle operator ecast(ellipse el)
 {/*<asyxml></code><documentation></documentation></operator></asyxml>*/
 	circle oc;
 	bool infb = (!finite(el.a) || !finite(el.b));
-	if(!infb && abs(el.a - el.b) > epsgeo)
+	if (!infb && abs(el.a - el.b) > epsgeo)
 		abort("Can not cast ellipse with different axis values to circle");
 	oc = circle(el.C, infb ? infinity : el.a);
 	oc.l = el.l.copy();
@@ -3308,13 +3294,13 @@ circle operator ecast(ellipse el)
 /*<asyxml><operator type = "ellipse" signature="cast(conic)"><code></asyxml>*/
 ellipse operator ecast(conic co)
 {/*<asyxml></code><documentation>Cast a conic to an ellipse (can be a circle).</documentation></operator></asyxml>*/
-	if(degenerate(co) && co.e < 1) return ellipse(co.l[0].A, co.l[0].B, infinity);
+	if (degenerate(co) && co.e < 1) return ellipse(co.l[0].A, co.l[0].B, infinity);
 	ellipse oe;
-	if(co.e < 1) {
+	if (co.e < 1) {
 		real a = co.p/(1 - co.e^2);
 		real c = co.e * a;
 		vector v = co.D.v;
-		if(!sameside(co.D.A + v, co.F, co.D)) v = -v;
+		if (!sameside(co.D.A + v, co.F, co.D)) v = -v;
 		point f2 = co.F + 2 * c * v;
 		f2 = changecoordsys(co.F.coordsys, f2);
 		oe = a == 0 ? ellipse(co.F, co.p, co.p, 0) : ellipse(co.F, f2, a);
@@ -3327,7 +3313,7 @@ ellipse operator ecast(conic co)
 parabola operator ecast(conic co)
 {/*<asyxml></code><documentation>Cast a conic to a parabola.</documentation></operator></asyxml>*/
 	parabola op;
-	if(abs(co.e - 1) > epsgeo) abort("casting: The conic section is not a parabola.");
+	if (abs(co.e - 1) > epsgeo) abort("casting: The conic section is not a parabola.");
 	op.init(co.F, co.D);
 	return op;
 }
@@ -3342,11 +3328,11 @@ conic operator cast(parabola p)
 hyperbola operator ecast(conic co)
 {/*<asyxml></code><documentation>Cast a conic section to an hyperbola.</documentation></operator></asyxml>*/
 	hyperbola oh;
-	if(co.e > 1) {
+	if (co.e > 1) {
 		real a = co.p/(co.e^2 - 1);
 		real c = co.e * a;
 		vector v = co.D.v;
-		if(sameside(co.D.A + v, co.F, co.D)) v = -v;
+		if (sameside(co.D.A + v, co.F, co.D)) v = -v;
 		point f2 = co.F + 2 * c * v;
 		f2 = changecoordsys(co.F.coordsys, f2);
 		oh = hyperbola(co.F, f2, a);
@@ -3365,7 +3351,7 @@ conic operator cast(hyperbola h)
 conic operator cast(ellipse el)
 {/*<asyxml></code><documentation>Ellipse to conic section.</documentation></operator></asyxml>*/
 	conic oc;
-	if(abs(el.c) > epsgeo) {
+	if (abs(el.c) > epsgeo) {
 		real x = el.a^2/el.c;
 		point O = (el.F1 + el.F2)/2;
 		point A = O + x * unit(el.F1 - el.F2);
@@ -3376,7 +3362,7 @@ conic operator cast(ellipse el)
 		line l = line(rotate(90, M) * el.F1, M);
 		oc = conic(el.F1, l, 0);
 	}
-	if(degenerate(el)) {
+	if (degenerate(el)) {
 		oc.p = infinity;
 		oc.h = infinity;
 		oc.l = new line[]{el.l};
@@ -3395,9 +3381,9 @@ circle operator ecast(conic c)
 {/*<asyxml></code><documentation>Conic section to circle.</documentation></operator></asyxml>*/
 	ellipse el = (ellipse)c;
 	circle oc;
-	if(abs(el.a - el.b) < epsgeo) {
+	if (abs(el.a - el.b) < epsgeo) {
 		oc = circle(el.C, el.a);
-		if(degenerate(c)) oc.l = c.l[0];
+		if (degenerate(c)) oc.l = c.l[0];
 	}
 	else abort("Can not cast this conic to a circle");
 	return oc;
@@ -3406,13 +3392,13 @@ circle operator ecast(conic c)
 /*<asyxml><operator type = "ellipse" signature="*(transform,ellipse)"><code></asyxml>*/
 ellipse operator *(transform t, ellipse el)
 {/*<asyxml></code><documentation>Provide transform * ellipse.</documentation></operator></asyxml>*/
-	if(!degenerate(el)) {
+	if (!degenerate(el)) {
 		point[] ep;
 		for (int i = 0; i < 360; i += 72) {
 			ep.push(t * angpoint(el, i));
 		}
 		ellipse oe = ellipse(ep[0], ep[1], ep[2], ep[3], ep[4]);
-		if(angpoint(oe, 0) != ep[0]) return ellipse(oe.F2, oe.F1, oe.a);
+		if (angpoint(oe, 0) != ep[0]) return ellipse(oe.F2, oe.F1, oe.a);
 		return oe;
 	}
 	return ellipse(t * el.l.A, t * el.l.B, infinity);
@@ -3453,7 +3439,7 @@ hyperbola operator *(transform t, hyperbola h)
 	}
 
 	hyperbola oe = hyperbola(ep[0], ep[1], ep[2], ep[3], ep[4]);
-	if(angpoint(oe, 90) != ep[0]) {
+	if (angpoint(oe, 90) != ep[0]) {
 		oe = hyperbola(oe.F2, oe.F1, oe.a);
 	}
 
@@ -3466,8 +3452,8 @@ hyperbola operator *(transform t, hyperbola h)
 /*<asyxml><operator type = "conic" signature="*(transform,conic)"><code></asyxml>*/
 conic operator *(transform t, conic co)
 {/*<asyxml></code><documentation>Provide transform * conic.</documentation></operator></asyxml>*/
-	if(co.e < 1) return (t * ((ellipse)co));
-	if(co.e == 1) return (t * ((parabola)co));
+	if (co.e < 1) return (t * ((ellipse)co));
+	if (co.e == 1) return (t * ((parabola)co));
 	return (t * ((hyperbola)co));
 }
 
@@ -3491,7 +3477,7 @@ path arcfromcenter(ellipse el, real angle1, real angle2,
 	 drawing in the given direction, with n nodes.
 	 The angles are mesured relatively to the  axis (C,x-axis) where C is
 	 the center of the ellipse.</documentation></function></asyxml>*/
-	if(degenerate(el)) abort("arcfromcenter: can not convert degenerated ellipse to path.");
+	if (degenerate(el)) abort("arcfromcenter: can not convert degenerated ellipse to path.");
 	if (angle1 > angle2)
 		return reverse(arcfromcenter(el, angle2, angle1, !direction, n));
 
@@ -3547,7 +3533,7 @@ path arcfromcenter(hyperbola h, real angle1, real angle2,
 	for (int i = 0; i < n; ++i) {
 		a = a1 + i * step;
 		r = (h.b * cos(a))^2 - (h.a * sin(a))^2;
-		if(r > epsgeo) {
+		if (r > epsgeo) {
 			r = sqrt(h.a^2 * h.b^2/r);
 			op = join(op, Rp * Rp.polar(r, a + da));
 			join = operator ..;
@@ -3563,10 +3549,10 @@ path arcfromcenter(explicit conic co, real angle1, real angle2,
 {/*<asyxml></code><documentation>Use arcfromcenter(ellipse, ...) or arcfromcenter(hyperbola, ...) depending of
 	 the eccentricity of 'co'.</documentation></function></asyxml>*/
 	path g;
-	if(co.e < 1)
+	if (co.e < 1)
 		g = arcfromcenter((ellipse)co, angle1,
 											angle2, direction, n);
-	else if(co.e > 1)
+	else if (co.e > 1)
 		g = arcfromcenter((hyperbola)co, angle1,
 											angle2, n, direction);
 	else abort("arcfromcenter: does not exist for a parabola.");
@@ -3627,7 +3613,7 @@ bqe equation(hyperbola h)
 /*<asyxml><operator type = "path" signature="cast(ellipse)"><code></asyxml>*/
 path operator cast(ellipse el)
 {/*<asyxml></code><documentation>Cast ellipse to path.</documentation></operator></asyxml>*/
-	if(degenerate(el))
+	if (degenerate(el))
 		abort("Casting degenerated ellipse to path is not possible.");
 	int n = el.e == 0 ? circlenodesnumber(el.a) : ellipsenodesnumber(el.a, el.b);
 	return arcfromcenter(el, 0.0, 360, CCW, n)&cycle;
@@ -3652,7 +3638,7 @@ real[] bangles(picture pic = currentpicture, parabola p)
 	} else {
 		bmin = p.bmin;bmax = p.bmax;
 	}
-	if(bmin.x == bmax.x || bmin.y == bmax.y || !finite(abs(bmin)) || !finite(abs(bmax)))
+	if (bmin.x == bmax.x || bmin.y == bmax.y || !finite(abs(bmin)) || !finite(abs(bmax)))
 		return new real[] {0, 0};
 	b[0] = bmin;
 	b[1] = (bmax.x, bmin.y);
@@ -3663,7 +3649,7 @@ real[] bangles(picture pic = currentpicture, parabola p)
 	for (int i = 0; i < 4; ++i) {
 		pair[] tmp = intersectionpoints(b[i], b[(i + 1)%4], eq);
 		for (int j = 0; j < tmp.length; ++j) {
-			if(dot(b[i]-tmp[j], b[(i + 1)%4]-tmp[j]) <= epsgeo)
+			if (dot(b[i]-tmp[j], b[(i + 1)%4]-tmp[j]) <= epsgeo)
 				inter.push(tmp[j]);
 		}
 	}
@@ -3689,7 +3675,7 @@ real[][] bangles(picture pic = currentpicture, hyperbola h)
 	} else {
 		bmin = h.bmin;bmax = h.bmax;
 	}
-	if(bmin.x == bmax.x || bmin.y == bmax.y || !finite(abs(bmin)) || !finite(abs(bmax)))
+	if (bmin.x == bmax.x || bmin.y == bmax.y || !finite(abs(bmin)) || !finite(abs(bmax)))
 		return new real[][] {{0, 0}, {0, 0}};
 	b[0] = bmin;
 	b[1] = (bmax.x, bmin.y);
@@ -3702,8 +3688,8 @@ real[][] bangles(picture pic = currentpicture, hyperbola h)
 	for (int i = 0; i < 4; ++i) {
 		pair[] tmp = intersectionpoints(b[i], b[(i + 1)%4], eq);
 		for (int j = 0; j < tmp.length; ++j) {
-			if(dot(b[i]-tmp[j], b[(i + 1)%4]-tmp[j]) <= epsgeo) {
-				if(dot(F1 - C, tmp[j]-C) > 0) inter0.push(tmp[j]);
+			if (dot(b[i]-tmp[j], b[(i + 1)%4]-tmp[j]) <= epsgeo) {
+				if (dot(F1 - C, tmp[j]-C) > 0) inter0.push(tmp[j]);
 				else inter1.push(tmp[j]);
 			}
 		}
@@ -3739,7 +3725,7 @@ void draw(picture pic = currentpicture, Label L = "", circle c,
 					arrowbar arrow = None, arrowbar bar = None,
 					margin margin = NoMargin, Label legend = "", marker marker = nomarker)
 {/*<asyxml></code><documentation></documentation></function></asyxml>*/
-	if(degenerate(c)) draw(pic, L, c.l, align, p, arrow, legend, marker);
+	if (degenerate(c)) draw(pic, L, c.l, align, p, arrow, legend, marker);
 	else draw(pic, L, (path)c, align, p, arrow, bar, margin, legend, marker);
 }
 
@@ -3760,7 +3746,7 @@ void draw(picture pic = currentpicture, Label L = "", ellipse el,
 					arrowbar arrow = None, arrowbar bar = None,
 					margin margin = NoMargin, Label legend = "", marker marker = nomarker)
 {/*<asyxml></code><documentation></documentation>Draw the ellipse 'el' if it is not degenerated else draw 'el.l'.</function></asyxml>*/
-	if(degenerate(el)) draw(pic, L, el.l, align, p, arrow, legend, marker);
+	if (degenerate(el)) draw(pic, L, el.l, align, p, arrow, legend, marker);
 	else draw(pic, L, (path)el, align, p, arrow, bar, margin, legend, marker);
 }
 
@@ -3797,7 +3783,7 @@ void draw(picture pic = currentpicture, Label L = "", parabola parabola,
 		}, true);
 
 	pair m = pic.userMin(), M = pic.userMax();
-	if(m != M) {
+	if (m != M) {
 		pic.addBox(truepoint(SW), truepoint(NE));
 	}
 }
@@ -3847,7 +3833,7 @@ void draw(picture pic = currentpicture, Label L = "", hyperbola h,
 		}, true);
 
 	pair m = pic.userMin(), M = pic.userMax();
-	if(m != M)
+	if (m != M)
 		pic.addBox(truepoint(SW), truepoint(NE));
 }
 
@@ -3858,14 +3844,14 @@ void draw(picture pic = currentpicture, Label L = "", explicit conic co,
 					margin margin = NoMargin, Label legend = "", marker marker = nomarker)
 {/*<asyxml></code><documentation>Use one of the routine 'draw(ellipse, ...)',
 	 'draw(parabola, ...)' or 'draw(hyperbola, ...)' depending of the value of eccentricity of 'co'.</documentation></function></asyxml>*/
-	if(co.e == 0)
+	if (co.e == 0)
 		draw(pic, L, (circle)co, align, p, arrow, bar, margin, legend, marker);
 	else
-		if(co.e < 1) draw(pic, L, (ellipse)co, align, p, arrow, bar, margin, legend, marker);
+		if (co.e < 1) draw(pic, L, (ellipse)co, align, p, arrow, bar, margin, legend, marker);
 		else
-			if(co.e == 1) draw(pic, L, (parabola)co, align, p, arrow, bar, margin, legend, marker);
+			if (co.e == 1) draw(pic, L, (parabola)co, align, p, arrow, bar, margin, legend, marker);
 			else
-				if(co.e > 1) draw(pic, L, (hyperbola)co, align, p, arrow, bar, margin, legend, marker);
+				if (co.e > 1) draw(pic, L, (hyperbola)co, align, p, arrow, bar, margin, legend, marker);
 				else abort("draw: unknown conic.");
 }
 
@@ -3873,13 +3859,13 @@ void draw(picture pic = currentpicture, Label L = "", explicit conic co,
 int conicnodesnumber(conic co, real angle1, real angle2, bool dir = CCW)
 {/*<asyxml></code><documentation>Return the number of node to draw a conic arc.</documentation></function></asyxml>*/
 	int oi;
-	if(co.e == 0) {
+	if (co.e == 0) {
 		circle c = (circle)co;
 		oi = circlenodesnumber(c.r, angle1, angle2);
-	} else if(co.e < 1) {
+	} else if (co.e < 1) {
 		ellipse el = (ellipse)co;
 		oi = ellipsenodesnumber(el.a, el.b, angle1, angle2, dir);
-	} else if(co.e == 1) {
+	} else if (co.e == 1) {
 		parabola p = (parabola)co;
 		oi = parabolanodesnumber(p, angle1, angle2);
 	} else {
@@ -3892,8 +3878,8 @@ int conicnodesnumber(conic co, real angle1, real angle2, bool dir = CCW)
 /*<asyxml><operator type = "path" signature="cast(conic)"><code></asyxml>*/
 path operator cast(conic co)
 {/*<asyxml></code><documentation>Cast conic section to path.</documentation></operator></asyxml>*/
-	if(co.e < 1) return (path)((ellipse)co);
-	if(co.e == 1) return (path)((parabola)co);
+	if (co.e < 1) return (path)((ellipse)co);
+	if (co.e == 1) return (path)((parabola)co);
 	return (path)((hyperbola)co);
 }
 
@@ -3903,14 +3889,14 @@ bqe equation(explicit conic co)
 	 bqe.a[0] * x^2 + bqe.a[1] * x * y + bqe.a[2] * y^2 + bqe.a[3] * x + bqe.a[4] * y + bqe.a[5] = 0.
 	 One can change the coordinate system of 'bqe' using the routine 'changecoordsys'.</documentation></function></asyxml>*/
 	bqe obqe;
-	if(co.e == 0)
+	if (co.e == 0)
 		obqe = equation((circle)co);
 	else
-		if(co.e < 1) obqe = equation((ellipse)co);
+		if (co.e < 1) obqe = equation((ellipse)co);
 		else
-			if(co.e == 1) obqe = equation((parabola)co);
+			if (co.e == 1) obqe = equation((parabola)co);
 			else
-				if(co.e > 1) obqe = equation((hyperbola)co);
+				if (co.e > 1) obqe = equation((hyperbola)co);
 				else abort("draw: unknown conic.");
 	return obqe;
 }
@@ -3923,14 +3909,14 @@ string conictype(bqe bqe)
 	string os = "degenerated";
 	real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];
 	real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);
-	if(abs(delta) < 10 * epsgeo) return os;
+	if (abs(delta) < 10 * epsgeo) return os;
 	real J = a * c - b^2;
 	real I = a + c;
-	if(J > epsgeo) {
-		if(delta/I < -epsgeo);
+	if (J > epsgeo) {
+		if (delta/I < -epsgeo);
 		os = "ellipse";
 	} else {
-		if(abs(J) < epsgeo) os = "parabola"; else os = "hyperbola";
+		if (abs(J) < epsgeo) os = "parabola"; else os = "hyperbola";
 	}
 	return os;
 }
@@ -3940,17 +3926,17 @@ conic conic(point M1, point M2, point M3, point M4, point M5)
 {/*<asyxml></code><documentation>Return the conic passing through 'M1', 'M2', 'M3', 'M4' and 'M5' if the conic is not degenerated.</documentation></function></asyxml>*/
 	bqe bqe = bqe(M1, M2, M3, M4, M5);
 	string ct = conictype(bqe);
-	if(ct == "degenerated") abort("conic: degenerated conic passing through five points.");
-	if(ct == "ellipse") return ellipse(bqe);
-	if(ct == "parabola") return parabola(bqe);
+	if (ct == "degenerated") abort("conic: degenerated conic passing through five points.");
+	if (ct == "ellipse") return ellipse(bqe);
+	if (ct == "parabola") return parabola(bqe);
 	return hyperbola(bqe);
 }
 
 /*<asyxml><function type="coordsys" signature="canonicalcartesiansystem(hyperbola)"><code></asyxml>*/
 coordsys canonicalcartesiansystem(explicit conic co)
 {/*<asyxml></code><documentation>Return the canonical cartesian system of the conic 'co'.</documentation></function></asyxml>*/
-	if(co.e < 1) return canonicalcartesiansystem((ellipse)co);
-	else if(co.e == 1) return canonicalcartesiansystem((parabola)co);
+	if (co.e < 1) return canonicalcartesiansystem((ellipse)co);
+	else if (co.e == 1) return canonicalcartesiansystem((parabola)co);
 	return canonicalcartesiansystem((hyperbola)co);
 }
 
@@ -3959,13 +3945,13 @@ bqe canonical(bqe bqe)
 {/*<asyxml></code><documentation>Return the bivariate quadratic equation relative to the
 	 canonical coordinate system of the conic section represented by 'bqe'.</documentation></function></asyxml>*/
 	string type = conictype(bqe);
-	if(type == "") abort("canonical: the equation can not be performed.");
+	if (type == "") abort("canonical: the equation can not be performed.");
 	bqe obqe;
-	if(type == "ellipse") {
+	if (type == "ellipse") {
 		ellipse el = ellipse(bqe);
 		obqe = changecoordsys(canonicalcartesiansystem(el), equation(el));
 	} else {
-		if(type == "parabola") {
+		if (type == "parabola") {
 			parabola p = parabola(bqe);
 			obqe = changecoordsys(canonicalcartesiansystem(p), equation(p));
 		} else {
@@ -3980,12 +3966,12 @@ bqe canonical(bqe bqe)
 conic conic(bqe bqe)
 {/*<asyxml></code><documentation>Return the conic section represented by the bivariate quartic equation 'bqe'.</documentation></function></asyxml>*/
 	string type = conictype(bqe);
-	if(type == "") abort("canonical: the equation can not be performed.");
+	if (type == "") abort("canonical: the equation can not be performed.");
 	conic oc;
-	if(type == "ellipse") {
+	if (type == "ellipse") {
 		oc = ellipse(bqe);
 	} else {
-		if(type == "parabola") oc = parabola(bqe); else oc = hyperbola(bqe);
+		if (type == "parabola") oc = parabola(bqe); else oc = hyperbola(bqe);
 	}
 	return oc;
 }
@@ -4033,20 +4019,20 @@ real arclength(ellipse el, real angle1, real angle2,
 	 and 'angle2'.
 	 'angle1' and 'angle2' must be in the interval ]-360;+oo[ if polarconicroutine = fromFocus,
 	 ]-oo;+oo[ if polarconicroutine = fromCenter.</documentation></function></asyxml>*/
-	if(degenerate(el)) return infinity;
-	if(angle1 > angle2) return arclength(el, angle2, angle1, !direction, polarconicroutine);
+	if (degenerate(el)) return infinity;
+	if (angle1 > angle2) return arclength(el, angle2, angle1, !direction, polarconicroutine);
 	//   path g;int n = 1000;
-	//   if(el.e == 0) g = arcfromcenter(el, angle1, angle2, n, direction);
-	//   if(el.e != 1) g = polarconicroutine(el, angle1, angle2, n, direction);
+	//   if (el.e == 0) g = arcfromcenter(el, angle1, angle2, n, direction);
+	//   if (el.e != 1) g = polarconicroutine(el, angle1, angle2, n, direction);
 	//   write("with path = ", arclength(g));
-	if(polarconicroutine == fromFocus) {
+	if (polarconicroutine == fromFocus) {
 		//   dot(point(fromFocus(el, angle1, angle1, 1, CCW), 0), 2mm + blue);
 		//   dot(point(fromFocus(el, angle2, angle2, 1, CCW), 0), 2mm + blue);
 		//   write("fromfocus1 = ", angle1);
 		//   write("fromfocus2 = ", angle2);
 		real gle1 = focusToCenter(el, angle1);
 		real gle2 = focusToCenter(el, angle2);
-		if((gle1 - gle2) * (angle1 - angle2) > 0) {
+		if ((gle1 - gle2) * (angle1 - angle2) > 0) {
 			angle1 = gle1; angle2 = gle2;
 		} else {
 			angle1 = gle2; angle2 = gle1;
@@ -4056,7 +4042,7 @@ real arclength(ellipse el, real angle1, real angle2,
 		//   write("fromcenter1 = ", angle1);
 		//   write("fromcenter2 = ", angle2);
 	}
-	if(angle1 < 0 || angle2 < 0) return arclength(el, 180 + angle1, 180 + angle2, direction, fromCenter);
+	if (angle1 < 0 || angle2 < 0) return arclength(el, 180 + angle1, 180 + angle2, direction, fromCenter);
 	real a1 = direction ? angle1 : angle2;
 	real a2 = direction ? angle2 : angle1 + 360;
 	real elleq = el.a * elle(pi/2, el.e);
@@ -4322,7 +4308,7 @@ point point(circle c, abscissa l)
 point point(ellipse el, abscissa l)
 {/*<asyxml></code><documentation>Return the point of 'el' which has the abscissa 'l.x'
 	 according to the abscissa system 'l.system'.</documentation></function></asyxml>*/
-	if(el.e == 0) return point((circle)el, l);
+	if (el.e == 0) return point((circle)el, l);
 	coordsys R = coordsys(el);
 	if (l.system == nodesystem)
 		return point(R, point((path)el, l.x)/R);
@@ -4336,7 +4322,7 @@ point point(ellipse el, abscissa l)
 		while (abs(cx - x) > epsgeo) {
 			aout = (a1 + a2)/2;
 			cx = arclength(el, 0, aout, CCW, fromCenter); //fromCenter is speeder
-			if(cx > x) a2 = (a1 + a2)/2; else a1 = (a1 + a2)/2;
+			if (cx > x) a2 = (a1 + a2)/2; else a1 = (a1 + a2)/2;
 		}
 		path pel = fromCenter(el, sgn(l.x) * aout, sgn(l.x) * aout, 1, CCW);
 		return point(R, point(pel, 0)/R);
@@ -4364,7 +4350,7 @@ point point(parabola p, abscissa l)
 		real a1 = 1e-3, a2 = 360 - 1e-3, cx = infinity;
 		while (abs(cx - l.x) > epsgeo) {
 			cx = arclength(p, 180, (a1 + a2)/2);
-			if(cx > l.x) a2 = (a1 + a2)/2; else a1 = (a1 + a2)/2;
+			if (cx > l.x) a2 = (a1 + a2)/2; else a1 = (a1 + a2)/2;
 		}
 		path pp = fromFocus(p, a1, a1, 1, CCW);
 		return point(R, point(pp, 0)/R);
@@ -4400,9 +4386,9 @@ Try relpoint((path)your_hyperbola, x);");
 /*<asyxml><function type="abscissa" signature="point(conic,point)"><code></asyxml>*/
 point point(explicit conic co, abscissa l)
 {/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the conic 'co'.</documentation></function></asyxml>*/
-	if(co.e == 0) return point((circle)co, l);
-	if(co.e < 1) return point((ellipse)co, l);
-	if(co.e == 1) return point((parabola)co, l);
+	if (co.e == 0) return point((circle)co, l);
+	if (co.e < 1) return point((ellipse)co, l);
+	if (co.e == 1) return point((parabola)co, l);
 	return point((hyperbola)co, l);
 }
 
@@ -4478,9 +4464,9 @@ point point(explicit hyperbola h, explicit int x)
 point point(explicit conic co, explicit real x)
 {/*<asyxml></code><documentation>Return the point between node floor(x) and floor(x) + 1.</documentation></function></asyxml>*/
 	point op;
-	if(co.e == 0) op = point((circle)co, nodabscissa(x));
-	else if(co.e < 1) op = point((ellipse)co, nodabscissa(x));
-	else if(co.e == 1) op = point((parabola)co, nodabscissa(x));
+	if (co.e == 0) op = point((circle)co, nodabscissa(x));
+	else if (co.e < 1) op = point((ellipse)co, nodabscissa(x));
+	else if (co.e == 1) op = point((parabola)co, nodabscissa(x));
 	else op = point((hyperbola)co, nodabscissa(x));
 	return op;
 }
@@ -4527,9 +4513,9 @@ point relpoint(explicit hyperbola h, real x)
 point relpoint(explicit conic co, explicit real x)
 {/*<asyxml></code><documentation>Return the relative point of 'co' (0 means origin, 1 means end).</documentation></function></asyxml>*/
 	point op;
-	if(co.e == 0) op = point((circle)co, Relative(x));
-	else if(co.e < 1) op = point((ellipse)co, Relative(x));
-	else if(co.e == 1) op = point((parabola)co, Relative(x));
+	if (co.e == 0) op = point((circle)co, Relative(x));
+	else if (co.e < 1) op = point((ellipse)co, Relative(x));
+	else if (co.e == 1) op = point((parabola)co, Relative(x));
 	else op = point((hyperbola)co, Relative(x));
 	return op;
 }
@@ -4597,9 +4583,9 @@ point curpoint(explicit parabola p, real x)
 point curpoint(conic co, real x)
 {/*<asyxml></code><documentation>Return the point of 'co' which has the curvilinear abscissa 'x'.</documentation></function></asyxml>*/
 	point op;
-	if(co.e == 0) op = point((circle)co, curabscissa(x));
-	else if(co.e < 1) op = point((ellipse)co, curabscissa(x));
-	else if(co.e == 1) op = point((parabola)co, curabscissa(x));
+	if (co.e == 0) op = point((circle)co, curabscissa(x));
+	else if (co.e < 1) op = point((ellipse)co, curabscissa(x));
+	else if (co.e == 1) op = point((parabola)co, curabscissa(x));
 	else op = point((hyperbola)co, curabscissa(x));
 	return op;
 }
@@ -4607,11 +4593,11 @@ point curpoint(conic co, real x)
 /*<asyxml><function type="abscissa" signature="angabscissa(circle,point)"><code></asyxml>*/
 abscissa angabscissa(circle c, point M)
 {/*<asyxml></code><documentation>Return the angular abscissa of 'M' on the circle 'c'.</documentation></function></asyxml>*/
-	if(!(M @ c)) abort("angabscissa: the point is not on the circle.");
+	if (!(M @ c)) abort("angabscissa: the point is not on the circle.");
 	abscissa oa;
 	oa.system = angularsystem;
 	oa.x = degrees(M - c.C);
-	if(oa.x < 0) oa.x+=360;
+	if (oa.x < 0) oa.x+=360;
 	return oa;
 }
 
@@ -4619,13 +4605,13 @@ abscissa angabscissa(circle c, point M)
 abscissa angabscissa(ellipse el, point M,
 										 polarconicroutine polarconicroutine = currentpolarconicroutine)
 {/*<asyxml></code><documentation>Return the angular abscissa of 'M' on the ellipse 'el' according to 'polarconicroutine'.</documentation></function></asyxml>*/
-	if(!(M @ el)) abort("angabscissa: the point is not on the ellipse.");
+	if (!(M @ el)) abort("angabscissa: the point is not on the ellipse.");
 	abscissa oa;
 	oa.system = angularsystem;
 	oa.polarconicroutine = polarconicroutine;
 	oa.x = polarconicroutine == fromCenter ? degrees(M - el.C) : degrees(M - el.F1);
 	oa.x -= el.angle;
-	if(oa.x < 0) oa.x += 360;
+	if (oa.x < 0) oa.x += 360;
 	return oa;
 }
 
@@ -4633,42 +4619,42 @@ abscissa angabscissa(ellipse el, point M,
 abscissa angabscissa(hyperbola h, point M,
 										 polarconicroutine polarconicroutine = currentpolarconicroutine)
 {/*<asyxml></code><documentation>Return the angular abscissa of 'M' on the hyperbola 'h' according to 'polarconicroutine'.</documentation></function></asyxml>*/
-	if(!(M @ h)) abort("angabscissa: the point is not on the hyperbola.");
+	if (!(M @ h)) abort("angabscissa: the point is not on the hyperbola.");
 	abscissa oa;
 	oa.system = angularsystem;
 	oa.polarconicroutine = polarconicroutine;
 	oa.x = polarconicroutine == fromCenter ? degrees(M - h.C) : degrees(M - h.F1) + 180;
 	oa.x -= h.angle;
-	if(oa.x < 0) oa.x += 360;
+	if (oa.x < 0) oa.x += 360;
 	return oa;
 }
 
 /*<asyxml><function type="abscissa" signature="angabscissa(parabola,point)"><code></asyxml>*/
 abscissa angabscissa(parabola p, point M)
 {/*<asyxml></code><documentation>Return the angular abscissa of 'M' on the parabola 'p'.</documentation></function></asyxml>*/
-	if(!(M @ p)) abort("angabscissa: the point is not on the parabola.");
+	if (!(M @ p)) abort("angabscissa: the point is not on the parabola.");
 	abscissa oa;
 	oa.system = angularsystem;
 	oa.polarconicroutine = fromFocus;// Not used
 	oa.x = degrees(M - p.F);
 	oa.x -= p.angle;
-	if(oa.x < 0) oa.x += 360;
+	if (oa.x < 0) oa.x += 360;
 	return oa;
 }
 
 /*<asyxml><function type="abscissa" signature="angabscissa(conic,point)"><code></asyxml>*/
 abscissa angabscissa(explicit conic co, point M)
 {/*<asyxml></code><documentation>Return the angular abscissa of 'M' on the conic 'co'.</documentation></function></asyxml>*/
-	if(co.e == 0) return angabscissa((circle)co, M);
-	if(co.e < 1) return angabscissa((ellipse)co, M);
-	if(co.e == 1) return angabscissa((parabola)co, M);
+	if (co.e == 0) return angabscissa((circle)co, M);
+	if (co.e < 1) return angabscissa((ellipse)co, M);
+	if (co.e == 1) return angabscissa((parabola)co, M);
 	return angabscissa((hyperbola)co, M);
 }
 
 /*<asyxml><function type="abscissa" signature="curabscissa(line,point)"><code></asyxml>*/
 abscissa curabscissa(line l, point M)
 {/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the line 'l'.</documentation></function></asyxml>*/
-	if(!(M @ extend(l))) abort("curabscissa: the point is not on the line.");
+	if (!(M @ extend(l))) abort("curabscissa: the point is not on the line.");
 	abscissa oa;
 	oa.system = curvilinearsystem;
 	oa.x = sgn(dot(M - l.A, l.B - l.A)) * abs(M - l.A);
@@ -4678,7 +4664,7 @@ abscissa curabscissa(line l, point M)
 /*<asyxml><function type="abscissa" signature="curabscissa(circle,point)"><code></asyxml>*/
 abscissa curabscissa(circle c, point M)
 {/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the circle 'c'.</documentation></function></asyxml>*/
-	if(!(M @ c)) abort("curabscissa: the point is not on the circle.");
+	if (!(M @ c)) abort("curabscissa: the point is not on the circle.");
 	abscissa oa;
 	oa.system = curvilinearsystem;
 	oa.x = pi * angabscissa(c, M).x * c.r/180;
@@ -4688,7 +4674,7 @@ abscissa curabscissa(circle c, point M)
 /*<asyxml><function type="abscissa" signature="curabscissa(ellipse,point)"><code></asyxml>*/
 abscissa curabscissa(ellipse el, point M)
 {/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the ellipse 'el'.</documentation></function></asyxml>*/
-	if(!(M @ el)) abort("curabscissa: the point is not on the ellipse.");
+	if (!(M @ el)) abort("curabscissa: the point is not on the ellipse.");
 	abscissa oa;
 	oa.system = curvilinearsystem;
 	real a = angabscissa(el, M, fromCenter).x;
@@ -4700,7 +4686,7 @@ abscissa curabscissa(ellipse el, point M)
 /*<asyxml><function type="abscissa" signature="curabscissa(parabola,point)"><code></asyxml>*/
 abscissa curabscissa(parabola p, point M)
 {/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the parabola 'p'.</documentation></function></asyxml>*/
-	if(!(M @ p)) abort("curabscissa: the point is not on the parabola.");
+	if (!(M @ p)) abort("curabscissa: the point is not on the parabola.");
 	abscissa oa;
 	oa.system = curvilinearsystem;
 	real a = angabscissa(p, M).x;
@@ -4712,16 +4698,16 @@ abscissa curabscissa(parabola p, point M)
 /*<asyxml><function type="abscissa" signature="curabscissa(conic,point)"><code></asyxml>*/
 abscissa curabscissa(conic co, point M)
 {/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the conic 'co'.</documentation></function></asyxml>*/
-	if(co.e > 1) abort("curabscissa: not implemented for this hyperbola.");
-	if(co.e == 0) return curabscissa((circle)co, M);
-	if(co.e < 1) return curabscissa((ellipse)co, M);
+	if (co.e > 1) abort("curabscissa: not implemented for this hyperbola.");
+	if (co.e == 0) return curabscissa((circle)co, M);
+	if (co.e < 1) return curabscissa((ellipse)co, M);
 	return curabscissa((parabola)co, M);
 }
 
 /*<asyxml><function type="abscissa" signature="nodabscissa(line,point)"><code></asyxml>*/
 abscissa nodabscissa(line l, point M)
 {/*<asyxml></code><documentation>Return the node abscissa of 'M' on the line 'l'.</documentation></function></asyxml>*/
-	if(!(M @ (segment)l)) abort("nodabscissa: the point is not on the segment.");
+	if (!(M @ (segment)l)) abort("nodabscissa: the point is not on the segment.");
 	abscissa oa;
 	oa.system = nodesystem;
 	oa.x = abs(M - l.A)/abs(l.A - l.B);
@@ -4731,7 +4717,7 @@ abscissa nodabscissa(line l, point M)
 /*<asyxml><function type="abscissa" signature="nodabscissa(circle,point)"><code></asyxml>*/
 abscissa nodabscissa(circle c, point M)
 {/*<asyxml></code><documentation>Return the node abscissa of 'M' on the circle 'c'.</documentation></function></asyxml>*/
-	if(!(M @ c)) abort("nodabscissa: the point is not on the circle.");
+	if (!(M @ c)) abort("nodabscissa: the point is not on the circle.");
 	abscissa oa;
 	oa.system = nodesystem;
 	oa.x = intersect((path)c, locate(M))[0];
@@ -4741,7 +4727,7 @@ abscissa nodabscissa(circle c, point M)
 /*<asyxml><function type="abscissa" signature="nodabscissa(ellipse,point)"><code></asyxml>*/
 abscissa nodabscissa(ellipse el, point M)
 {/*<asyxml></code><documentation>Return the node abscissa of 'M' on the ellipse 'el'.</documentation></function></asyxml>*/
-	if(!(M @ el)) abort("nodabscissa: the point is not on the ellipse.");
+	if (!(M @ el)) abort("nodabscissa: the point is not on the ellipse.");
 	abscissa oa;
 	oa.system = nodesystem;
 	oa.x = intersect((path)el, M)[0];
@@ -4751,12 +4737,12 @@ abscissa nodabscissa(ellipse el, point M)
 /*<asyxml><function type="abscissa" signature="nodabscissa(parabola,point)"><code></asyxml>*/
 abscissa nodabscissa(parabola p, point M)
 {/*<asyxml></code><documentation>Return the node abscissa OF 'M' on the parabola 'p'.</documentation></function></asyxml>*/
-	if(!(M @ p)) abort("nodabscissa: the point is not on the parabola.");
+	if (!(M @ p)) abort("nodabscissa: the point is not on the parabola.");
 	abscissa oa;
 	oa.system = nodesystem;
 	path pg = p;
 	real[] t = intersect(pg, M, 1e-5);
-	if(t.length == 0) abort("nodabscissa: the point is not on the path of the parabola.");
+	if (t.length == 0) abort("nodabscissa: the point is not on the path of the parabola.");
 	oa.x = t[0];
 	return oa;
 }
@@ -4764,9 +4750,9 @@ abscissa nodabscissa(parabola p, point M)
 /*<asyxml><function type="abscissa" signature="nodabscissa(conic,point)"><code></asyxml>*/
 abscissa nodabscissa(conic co, point M)
 {/*<asyxml></code><documentation>Return the node abscissa of 'M' on the conic 'co'.</documentation></function></asyxml>*/
-	if(co.e > 1) abort("nodabscissa: not implemented for hyperbola.");
-	if(co.e == 0) return nodabscissa((circle)co, M);
-	if(co.e < 1) return nodabscissa((ellipse)co, M);
+	if (co.e > 1) abort("nodabscissa: not implemented for hyperbola.");
+	if (co.e == 0) return nodabscissa((circle)co, M);
+	if (co.e < 1) return nodabscissa((ellipse)co, M);
 	return nodabscissa((parabola)co, M);
 }
 
@@ -4774,7 +4760,7 @@ abscissa nodabscissa(conic co, point M)
 /*<asyxml><function type="abscissa" signature="relabscissa(line,point)"><code></asyxml>*/
 abscissa relabscissa(line l, point M)
 {/*<asyxml></code><documentation>Return the relative abscissa of 'M' on the line 'l'.</documentation></function></asyxml>*/
-	if(!(M @ extend(l))) abort("relabscissa: the point is not on the line.");
+	if (!(M @ extend(l))) abort("relabscissa: the point is not on the line.");
 	abscissa oa;
 	oa.system = relativesystem;
 	oa.x = sgn(dot(M - l.A, l.B - l.A)) * abs(M - l.A)/abs(l.A - l.B);
@@ -4784,7 +4770,7 @@ abscissa relabscissa(line l, point M)
 /*<asyxml><function type="abscissa" signature="relabscissa(circle,point)"><code></asyxml>*/
 abscissa relabscissa(circle c, point M)
 {/*<asyxml></code><documentation>Return the relative abscissa of 'M' on the circle 'c'.</documentation></function></asyxml>*/
-	if(!(M @ c)) abort("relabscissa: the point is not on the circle.");
+	if (!(M @ c)) abort("relabscissa: the point is not on the circle.");
 	abscissa oa;
 	oa.system = relativesystem;
 	oa.x = angabscissa(c, M).x/360;
@@ -4794,7 +4780,7 @@ abscissa relabscissa(circle c, point M)
 /*<asyxml><function type="abscissa" signature="relabscissa(ellipse,point)"><code></asyxml>*/
 abscissa relabscissa(ellipse el, point M)
 {/*<asyxml></code><documentation>Return the relative abscissa of 'M' on the ellipse 'el'.</documentation></function></asyxml>*/
-	if(!(M @ el)) abort("relabscissa: the point is not on the ellipse.");
+	if (!(M @ el)) abort("relabscissa: the point is not on the ellipse.");
 	abscissa oa;
 	oa.system = relativesystem;
 	oa.x = curabscissa(el, M).x/arclength(el);
@@ -4806,9 +4792,9 @@ abscissa relabscissa(ellipse el, point M)
 abscissa relabscissa(conic co, point M)
 {/*<asyxml></code><documentation>Return the relative abscissa of 'M'
 	 on the conic 'co'.</documentation></function></asyxml>*/
-	if(co.e > 1) abort("relabscissa: not implemented for hyperbola and parabola.");
-	if(co.e == 1) return relabscissa((parabola)co, M);
-	if(co.e == 0) return relabscissa((circle)co, M);
+	if (co.e > 1) abort("relabscissa: not implemented for hyperbola and parabola.");
+	if (co.e == 1) return relabscissa((parabola)co, M);
+	if (co.e == 0) return relabscissa((circle)co, M);
 	return relabscissa((ellipse)co, M);
 }
 // *.......................ABSCISSA........................*
@@ -4846,7 +4832,7 @@ struct arc {
 						polarconicroutine polarconicroutine,
 						bool direction = CCW)
 	{/*<asyxml></code><documentation>Constructor.</documentation></method></asyxml>*/
-		if(abs(angle1 - angle2) > 360) abort("arc: |angle1 - angle2| > 360.");
+		if (abs(angle1 - angle2) > 360) abort("arc: |angle1 - angle2| > 360.");
 		this.el = el;
 		this.setangles(angle0, angle1, angle2);
 		this.polarconicroutine = polarconicroutine;
@@ -4870,8 +4856,8 @@ struct arc {
 /*<asyxml><function type="polarconicroutine" signature="polarconicroutine(ellipse)"><code></asyxml>*/
 polarconicroutine polarconicroutine(conic co)
 {/*<asyxml></code><documentation>Return the default routine used to draw a conic.</documentation></function></asyxml>*/
-	if(co.e == 0) return fromCenter;
-	if(co.e == 1) return fromFocus;
+	if (co.e == 0) return fromCenter;
+	if (co.e == 1) return fromFocus;
 	return currentpolarconicroutine;
 }
 
@@ -4906,7 +4892,7 @@ real degrees(arc a)
 {/*<asyxml></code><documentation>Return the measure in degrees of the oriented arc 'a'.</documentation></function></asyxml>*/
 	real or;
 	real da = a.angle2 - a.angle1;
-	if(a.direction) {
+	if (a.direction) {
 		or = a.angle1 < a.angle2 ? da : 360 + da;
 	} else {
 		or = a.angle1 < a.angle2 ? -360 + da : da;
@@ -4928,8 +4914,8 @@ int arcnodesnumber(explicit arc a)
 
 private path arctopath(arc a, int n)
 {
-	if(a.el.e == 0) return arcfromcenter(a.el, a.angle0 + a.angle1, a.angle0 + a.angle2, a.direction, n);
-	if(a.el.e != 1) return a.polarconicroutine(a.el, a.angle1, a.angle2, n, a.direction);
+	if (a.el.e == 0) return arcfromcenter(a.el, a.angle0 + a.angle1, a.angle0 + a.angle2, a.direction, n);
+	if (a.el.e != 1) return a.polarconicroutine(a.el, a.angle1, a.angle2, n, a.direction);
 	return arcfromfocus(a.el, a.angle1, a.angle2, n, a.direction);
 }
 
@@ -4938,7 +4924,7 @@ point angpoint(arc a, real angle)
 {/*<asyxml></code><documentation>Return the point given by its angular position (in degrees) relative to the arc 'a'.
 	 If 'angle > degrees(a)' or 'angle < 0' the returned point is on the extended arc.</documentation></function></asyxml>*/
 	pair p;
-	if(a.el.e == 0) {
+	if (a.el.e == 0) {
 		real gle = a.angle0 + a.angle1 + (a.direction ? angle : -angle);
 		p = point(arcfromcenter(a.el, gle, gle, CCW, 1), 0);
 	}
@@ -4974,7 +4960,7 @@ arc operator *(transform t, explicit arc a)
 	arc oa;
 	a0 = (a.angle0 + angle(shiftless(t)))%360;
 	pair C;
-	if(a.polarconicroutine == fromCenter) C = el.C; else C = el.F1;
+	if (a.polarconicroutine == fromCenter) C = el.C; else C = el.F1;
 	real d = abs(locate(el.F2 - el.F1)) > epsgeo ?
 		degrees(locate(el.F2 - el.F1)) : a0 + degrees(el.C.coordsys.i);
 	ap1 = (degrees(P[0]-C, false) - d)%360;
@@ -4983,7 +4969,7 @@ arc operator *(transform t, explicit arc a)
 	g = arctopath(oa, 3);
 	PP[0] = point(g, 0);
 	PP[1] = point(g, 2);
-	if((a1 - a2) * (ap1 - ap2) < 0) {// Handle reflection.
+	if ((a1 - a2) * (ap1 - ap2) < 0) {// Handle reflection.
 		dir=!a.direction;
 		oa.init(el, a0, ap1, ap2, a.polarconicroutine, dir);
 	}
@@ -5050,23 +5036,23 @@ real arclength(arc a)
 private point ppoint(arc a, real x)
 {// Return the point of the arc proportionally to its length.
 	point oP;
-	if(a.el.e == 0) { // Case of circle.
+	if (a.el.e == 0) { // Case of circle.
 		oP = angpoint(a, x * abs(degrees(a)));
 	} else { // Ellipse and not circle.
-		if(!a.direction) {
+		if (!a.direction) {
 			transform t = reflect(line(a.el.F1, a.el.F2));
 			return t * ppoint(t * a, x);
 		}
 
 		real angle1 = a.angle1, angle2 = a.angle2;
-		if(a.polarconicroutine == fromFocus) {
+		if (a.polarconicroutine == fromFocus) {
 			//       dot(point(fromFocus(a.el, angle1, angle1, 1, CCW), 0), 2mm + blue);
 			//       dot(point(fromFocus(a.el, angle2, angle2, 1, CCW), 0), 2mm + blue);
 			//       write("fromfocus1 = ", angle1);
 			//       write("fromfocus2 = ", angle2);
 			real gle1 = focusToCenter(a.el, angle1);
 			real gle2 = focusToCenter(a.el, angle2);
-			if((gle1 - gle2) * (angle1 - angle2) > 0) {
+			if ((gle1 - gle2) * (angle1 - angle2) > 0) {
 				angle1 = gle1; angle2 = gle2;
 			} else {
 				angle1 = gle2; angle2 = gle1;
@@ -5077,7 +5063,7 @@ private point ppoint(arc a, real x)
 			//       dot(point(fromCenter(a.el, angle2, angle2, 1, CCW), 0), 1mm + red);
 		}
 
-		if(angle1 > angle2) {
+		if (angle1 > angle2) {
 			arc ta = a.copy();
 			ta.polarconicroutine = fromCenter;
 			ta.setangles(a0 = a.angle0, a1 = angle1 - 360, a2 = angle2);
@@ -5086,7 +5072,7 @@ private point ppoint(arc a, real x)
 		ellipse co = a.el;
 		real gle, a1, a2, cx = 0;
 		bool direction;
-		if(x >= 0) {
+		if (x >= 0) {
 			a1 = angle1;
 			a2 = a1 + 360;
 			direction = CCW;
@@ -5102,7 +5088,7 @@ private point ppoint(arc a, real x)
 		while(abs(cx - tx) > epsgeo) {
 			aout = (a1 + a2)/2;
 			cx = abs(arclength(co, gle, aout, direction, fromCenter));
-			if(cx > tx) a2 = (a1 + a2)/2 ; else a1 = (a1 + a2)/2;
+			if (cx > tx) a2 = (a1 + a2)/2 ; else a1 = (a1 + a2)/2;
 		}
 		pair p = point(arcfromcenter(co, aout, aout, CCW, 1), 0);
 		oP = point(coordsys(co), p/coordsys(co));
@@ -5124,7 +5110,7 @@ point point(arc a, abscissa l)
 	} else
 		if (l.system == curvilinearsystem) {
 			real tl;
-			if(co.e == 0) {
+			if (co.e == 0) {
 				tl = curabscissa(a.el, angpoint(a.el, a.angle0 + a.angle1)).x;
 				return curpoint(a.el, tl + (a.direction ? l.x : -l.x));
 			} else {
@@ -5170,7 +5156,7 @@ point curpoint(arc a, real x)
 /*<asyxml><function type="abscissa" signature="angabscissa(arc,point)"><code></asyxml>*/
 abscissa angabscissa(arc a, point M)
 {/*<asyxml></code><documentation>Return the angular abscissa of 'M' according to the arc 'a'.</documentation></function></asyxml>*/
-	if(!(M @ a.el))
+	if (!(M @ a.el))
 		abort("angabscissa: the point is not on the extended arc.");
 	abscissa oa;
 	oa.system = angularsystem;
@@ -5185,7 +5171,7 @@ abscissa angabscissa(arc a, point M)
 abscissa curabscissa(arc a, point M)
 {/*<asyxml></code><documentation>Return the curvilinear abscissa according to the arc 'a'.</documentation></function></asyxml>*/
 	ellipse el = a.el;
-	if(!(M @ el))
+	if (!(M @ el))
 		abort("angabscissa: the point is not on the extended arc.");
 	abscissa oa;
 	oa.system = curvilinearsystem;
@@ -5201,7 +5187,7 @@ abscissa curabscissa(arc a, point M)
 /*<asyxml><function type="abscissa" signature="nodabscissa(arc,point)"><code></asyxml>*/
 abscissa nodabscissa(arc a, point M)
 {/*<asyxml></code><documentation>Return the node abscissa according to the arc 'a'.</documentation></function></asyxml>*/
-	if(!(M @ a))
+	if (!(M @ a))
 		abort("nodabscissa: the point is not on the arc.");
 	abscissa oa;
 	oa.system = nodesystem;
@@ -5213,7 +5199,7 @@ abscissa nodabscissa(arc a, point M)
 abscissa relabscissa(arc a, point M)
 {/*<asyxml></code><documentation>Return the relative abscissa according to the arc 'a'.</documentation></function></asyxml>*/
 	ellipse el = a.el;
-	if(!( M @ el))
+	if (!( M @ el))
 		abort("relabscissa: the point is not on the prolonged arc.");
 	abscissa oa;
 	oa.system = relativesystem;
@@ -5236,8 +5222,8 @@ void markarc(picture pic = currentpicture,
 	pair p1 = point(a, 0);
 	pair p2 = relpoint(a, 1);
 	pair c = a.polarconicroutine == fromCenter ? locate(a.el.C) : locate(a.el.F1);
-	if(radius == 0) radius = markangleradius(markpen);
-	if(abs(Da) > 180) radius = -radius;
+	if (radius == 0) radius = markangleradius(markpen);
+	if (abs(Da) > 180) radius = -radius;
 	radius = (a.direction ? 1 : -1) * sgnd(Da) * radius;
 	draw(c--p1^^c--p2, sectorpen);
 	markangle(pic = pic, L = L, n = n, radius = radius, space = space,
@@ -5497,8 +5483,8 @@ struct triangle {/*<asyxml></code><documentation></documentation></asyxml>*/
 	{/*<asyxml></code><documentation>Return numbered vertex.
 		 'n' is 1 means VA, 2 means VB, 3 means VC, 4 means VA etc...</documentation></method></asyxml>*/
 		n = numarray[n - 1];
-		if(n == 1) return VA;
-		else if(n == 2) return VB;
+		if (n == 1) return VA;
+		else if (n == 2) return VB;
 		return VC;
 	}
 
@@ -5507,8 +5493,8 @@ struct triangle {/*<asyxml></code><documentation></documentation></asyxml>*/
 	{/*<asyxml></code><documentation>Return numbered point.
 		 n is 1 means A, 2 means B, 3 means C, 4 means A etc...</documentation></method></asyxml>*/
 		n = numarray[n - 1];
-		if(n == 1) return A;
-		else if(n == 2) return B;
+		if (n == 1) return A;
+		else if (n == 2) return B;
 		return C;
 	}
 
@@ -5592,20 +5578,20 @@ struct triangle {/*<asyxml></code><documentation></documentation></asyxml>*/
 	side side(int n)
 	{/*<asyxml></code><documentation>Return numbered side.
 		 n is 1 means AB, -1 means BA, 2 means BC, -2 means CB, etc.</documentation></method></asyxml>*/
-		if(n == 0) abort('Invalid side number.');
+		if (n == 0) abort('Invalid side number.');
 		int an = numarray[abs(n)-1];
-		if(an == 1) return n > 0 ? AB : BA;
-		else if(an == 2) return n > 0 ? BC : CB;
+		if (an == 1) return n > 0 ? AB : BA;
+		else if (an == 2) return n > 0 ? BC : CB;
 		return n > 0 ? CA : AC;
 	}
 
 	/*<asyxml><method type = "line" signature="line(int)"><code></asyxml>*/
 	line line(int n)
 	{/*<asyxml></code><documentation>Return the numbered line.</documentation></method></asyxml>*/
-		if(n == 0) abort('Invalid line number.');
+		if (n == 0) abort('Invalid line number.');
 		int an = numarray[abs(n)-1];
-		if(an == 1) return n > 0 ? line(A, B) : line(B, A);
-		else if(an == 2) return n > 0 ? line(B, C) : line(C, B);
+		if (an == 1) return n > 0 ? line(A, B) : line(B, A);
+		else if (an == 2) return n > 0 ? line(B, C) : line(C, B);
 		return n > 0 ? line(C, A) : line(A, C);
 	}
 
@@ -5716,7 +5702,7 @@ triangle triangle(line l1, line l2, line l3)
 	P1 = intersectionpoint(l1, l2);
 	P2 = intersectionpoint(l1, l3);
 	P3 = intersectionpoint(l2, l3);
-	if(!(defined(P1) && defined(P2) && defined(P3))) abort("triangle: two lines are parallel.");
+	if (!(defined(P1) && defined(P2) && defined(P3))) abort("triangle: two lines are parallel.");
 	return triangle(P1, P2, P3);
 }
 
@@ -5800,8 +5786,8 @@ point excenter(side side)
 	point op;
 	triangle t = side.t;
 	int n = numarray[abs(side.n) - 1];
-	if(n == 1) op = excenter(t.A, t.B, t.C);
-	else  if(n == 2) op = excenter(t.B, t.C, t.A);
+	if (n == 1) op = excenter(t.A, t.B, t.C);
+	else  if (n == 2) op = excenter(t.B, t.C, t.A);
 	else op = excenter(t.C, t.A, t.B);
 	return op;
 }
@@ -5814,8 +5800,8 @@ real exradius(side side)
 	real or;
 	triangle t = side.t;
 	int n = numarray[abs(side.n) - 1];
-	if(n == 1) or = exradius(t.A, t.B, t.C);
-	else  if(n == 2) or = exradius(t.B, t.C, t.A);
+	if (n == 1) or = exradius(t.A, t.B, t.C);
+	else  if (n == 2) or = exradius(t.B, t.C, t.A);
 	else or = exradius(t.A, t.C, t.B);
 	return or;
 }
@@ -5828,8 +5814,8 @@ circle excircle(side side)
 	circle oc;
 	int n = numarray[abs(side.n) - 1];
 	triangle t = side.t;
-	if(n == 1) oc = excircle(t.A, t.B, t.C);
-	else  if(n == 2) oc = excircle(t.B, t.C, t.A);
+	if (n == 1) oc = excircle(t.A, t.B, t.C);
+	else  if (n == 2) oc = excircle(t.B, t.C, t.A);
 	else oc = excircle(t.A, t.C, t.B);
 	return oc;
 }
@@ -5935,8 +5921,8 @@ point symmedian(side side)
 {/*<asyxml></code><documentation>The symmedian point on the side 'side'.</documentation></function></asyxml>*/
 	triangle t = side.t;
 	int n = numarray[abs(side.n) - 1];
-	if(n == 1) return trilinear(t, t.a(), t.b(), 0);
-	if(n == 2) return trilinear(t, 0, t.b(), t.c());
+	if (n == 1) return trilinear(t, t.a(), t.b(), 0);
+	if (n == 2) return trilinear(t, 0, t.b(), t.c());
 	return trilinear(t, t.a(), 0, t.c());
 }
 
@@ -5992,7 +5978,7 @@ point[] fermat(triangle t)
 /*<asyxml><function type="point" signature="isotomicconjugate(triangle,point)"><code></asyxml>*/
 point isotomicconjugate(triangle t, point M)
 {/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/IsotomicConjugate.html"/></documentation></function></asyxml>*/
-	if(!inside(t.Path(), locate(M))) abort("isotomic: the point must be inside the triangle.");
+	if (!inside(t.Path(), locate(M))) abort("isotomic: the point must be inside the triangle.");
 	trilinear tr = trilinear(t, M);
 	return point(trilinear(t, 1/(t.a()^2 * tr.a), 1/(t.b()^2 * tr.b), 1/(t.c()^2 * tr.c)));
 }
@@ -6111,8 +6097,8 @@ point bisectorpoint(side side)
 	 opposite point of 'side' with the side 'side'.</documentation></function></asyxml>*/
 	triangle t = side.t;
 	int n = numarray[abs(side.n) - 1];
-	if(n == 1) return trilinear(t, 1, 1, 0);
-	if(n == 2) return trilinear(t, 0, 1, 1);
+	if (n == 1) return trilinear(t, 1, 1, 0);
+	if (n == 2) return trilinear(t, 0, 1, 1);
 	return trilinear(t, 1, 0, 1);
 }
 
@@ -6135,8 +6121,8 @@ point intouch(side side)
 	triangle t = side.t;
 	real a = t.a(), b = t.b(), c = t.c();
 	int n = numarray[abs(side.n) - 1];
-	if(n == 1) return trilinear(t, b * c/(-a + b + c), a * c/(a - b + c), 0);
-	if(n == 2) return trilinear(t, 0, a * c/(a - b + c), a * b/(a + b - c));
+	if (n == 1) return trilinear(t, b * c/(-a + b + c), a * c/(a - b + c), 0);
+	if (n == 2) return trilinear(t, 0, a * c/(a - b + c), a * b/(a + b - c));
 	return trilinear(t, b * c/(-a + b + c), 0, a * b/(a + b - c));
 }
 
@@ -6220,15 +6206,15 @@ point[] intersectionpoints(triangle t, line l, bool extended = false)
 	point[] OP;
 	void addpoint(point P)
 	{
-		if(defined(P)) {
+		if (defined(P)) {
 			bool exist = false;
 			for (int i = 0; i < OP.length; ++i) {
-				if(P == OP[i]) {exist = true; break;}
+				if (P == OP[i]) {exist = true; break;}
 			}
-			if(!exist) OP.push(P);
+			if (!exist) OP.push(P);
 		}
 	}
-	if(extended) {
+	if (extended) {
 		for (int i = 1; i <= 3; ++i) {
 			addpoint(intersectionpoint(t.line(i), l));
 		}
@@ -6249,27 +6235,27 @@ point[] intersectionpoints(line l, triangle t, bool extended = false)
 vector dir(vertex V)
 {/*<asyxml></code><documentation>The direction (towards the outside of the triangle) of the interior angle bisector of 'V'.</documentation></function></asyxml>*/
 	triangle t = V.t;
-	if(V.n == 1) return vector(defaultcoordsys, (-dir(t.A--t.B, t.A--t.C)));
-	if(V.n == 2) return vector(defaultcoordsys, (-dir(t.B--t.A, t.B--t.C)));
+	if (V.n == 1) return vector(defaultcoordsys, (-dir(t.A--t.B, t.A--t.C)));
+	if (V.n == 2) return vector(defaultcoordsys, (-dir(t.B--t.A, t.B--t.C)));
 	return vector(defaultcoordsys, (-dir(t.C--t.A, t.C--t.B)));
 }
 
 /*<asyxml><function type="void" signature="lvoid label(picture,Label,vertex,pair,real,pen,filltype)"><code></asyxml>*/
 void label(picture pic = currentpicture, Label L, vertex V,
-					 pair align = dir(V),
-					 real alignFactor = 1,
-					 pen p = nullpen, filltype filltype = NoFill)
+			 pair align = dir(V),
+			 real alignFactor = 1,
+			 pen p = nullpen, filltype filltype = NoFill)
 {/*<asyxml></code><documentation>Draw 'L' on picture 'pic' at vertex 'V' aligned by 'alignFactor * align'.</documentation></function></asyxml>*/
 	label(pic, L, locate(point(V)), alignFactor * align, p, filltype);
 }
 
 /*<asyxml><function type="void" signature="label(picture,Label,Label,Label,triangle,real,real,pen,filltype)"><code></asyxml>*/
 void label(picture pic = currentpicture, Label LA = "$A$",
-					 Label LB = "$B$", Label LC = "$C$",
-					 triangle t,
-					 real alignAngle = 0,
-					 real alignFactor = 1,
-					 pen p = nullpen, filltype filltype = NoFill)
+			 Label LB = "$B$", Label LC = "$C$",
+			 triangle t,
+			 real alignAngle = 0,
+			 real alignFactor = 1,
+			 pen p = nullpen, filltype filltype = NoFill)
 {/*<asyxml></code><documentation>Draw labels LA, LB and LC aligned in the rotated (by 'alignAngle' in degrees) direction
 	 (towards the outside of the triangle) of the interior angle bisector of vertices.
 	 One can  individually modify the alignment by setting the Label parameter 'align'.</documentation></function></asyxml>*/
@@ -6286,9 +6272,9 @@ void label(picture pic = currentpicture, Label LA = "$A$",
 
 /*<asyxml><function type="void" signature="show(picture,Label,Label,Label,Label,Label,Label,triangle,pen,filltype)"><code></asyxml>*/
 void show(picture pic = currentpicture,
-					Label LA = "$A$", Label LB = "$B$", Label LC = "$C$",
-					Label La = "$a$", Label Lb = "$b$", Label Lc = "$c$",
-					triangle t, pen p = currentpen, filltype filltype = NoFill)
+			Label LA = "$A$", Label LB = "$B$", Label LC = "$C$",
+			Label La = "$a$", Label Lb = "$b$", Label Lc = "$c$",
+			triangle t, pen p = currentpen, filltype filltype = NoFill)
 {/*<asyxml></code><documentation>Draw triangle and labels of sides and vertices.</documentation></function></asyxml>*/
 	pair a = locate(t.A), b = locate(t.B), c = locate(t.C);
 	draw(pic, a--b--c--cycle, p);
@@ -6414,12 +6400,12 @@ inversion inversion(circle c1, circle c2, real sgn = 1)
 	 . 'c2' and positive inversion radius if 'sgn > 0';
 	 . 'c2' and negative inversion radius if 'sgn < 0';
 	 . 'c1' and 'c2' to 'c2' if 'sgn = 0'.</documentation></function></asyxml>*/
-	if(sgn == 0) {
+	if (sgn == 0) {
 		point O = radicalcenter(c1, c2);
 		return inversion(O^c1, O);
 	}
 	real a = abs(c1.r/c2.r);
-	if(sgn > 0) {
+	if (sgn > 0) {
 		point O = c1.C + a/abs(1 - a) * (c2.C - c1.C);
 		return inversion(a * abs(abs(O - c2.C)^2 - c2.r^2), O);
 	}
@@ -6434,7 +6420,10 @@ inversion inversion(circle c1, circle c2, circle c3)
 	return inversion(Rc, Rc^c1);
 }
 
-circle operator cast(inversion i){return circle(i.C, sgn(i.k) * sqrt(abs(i.k)));}
+circle operator cast(inversion i)
+{
+	return circle(i.C, sgn(i.k) * sqrt(abs(i.k)));
+}
 /*<asyxml><function type="circle" signature="circle(inversion)"><code></asyxml>*/
 circle circle(inversion i)
 {/*<asyxml></code><documentation>Return the inversion circle of 'i'.</documentation></function></asyxml>*/
@@ -6468,7 +6457,7 @@ The returned circle has an infinite radius, circle.l has been set.");
 circle inverse(real k, point A, line l)
 {/*<asyxml></code><documentation>Return the inverse circle of 'l' with
 	 respect to point 'A' and inversion radius 'k'.</documentation></function></asyxml>*/
-	if(A @ l) {
+	if (A @ l) {
 		lineinversion();
 		circle C = circle(A, infinity);
 		C.l = l;
@@ -6488,8 +6477,8 @@ circle operator *(inversion i, line l)
 circle inverse(real k, point A, circle c)
 {/*<asyxml></code><documentation>Return the inverse circle of 'c' with
 	 respect to point A and inversion radius 'k'.</documentation></function></asyxml>*/
-	if(degenerate(c)) return inverse(k, A, c.l);
-	if(A @ c) {
+	if (degenerate(c)) return inverse(k, A, c.l);
+	if (A @ c) {
 		lineinversion();
 		point M = rotate(180, c.C) * A, Mp = rotate(90, c.C) * A;
 		circle oc = circle(A, infinity);
@@ -6515,15 +6504,15 @@ circle operator *(inversion i, circle c)
 point[] intersectionpoints(line l, circle c)
 {/*<asyxml></code><documentation>Note that the line 'l' may be a segment by casting.
 	 intersectionpoints(circle, line) is also defined.</documentation></function></asyxml>*/
-	if(degenerate(c)) return new point[]{intersectionpoint(l, c.l)};
+	if (degenerate(c)) return new point[]{intersectionpoint(l, c.l)};
 	point[] op;
 	coordsys R = samecoordsys(l.A, c.C) ?
 		l.A.coordsys : defaultcoordsys;
 	coordsys Rp = defaultcoordsys;
 	circle cc = circle(changecoordsys(Rp, c.C), c.r);
 	point proj = projection(l) * c.C;
-	if(proj @ cc) { // The line is a tangente of the circle.
-		if(proj @ l) op.push(proj);// line may be a segement...
+	if (proj @ cc) { // The line is a tangente of the circle.
+		if (proj @ l) op.push(proj);// line may be a segement...
 	} else {
 		coordsys Rc = cartesiansystem(c.C, (1, 0), (0, 1));
 		line ll = changecoordsys(Rc, l);
@@ -6531,7 +6520,7 @@ point[] intersectionpoints(line l, circle c)
 																	1, 0, 1, 0, 0, -c.r^2);
 		for (int i = 0; i < P.length; ++i) {
 			point inter = changecoordsys(R, point(Rc, P[i]));
-			if(inter @ l) op.push(inter);
+			if (inter @ l) op.push(inter);
 		}
 	}
 	return op;
@@ -6546,8 +6535,8 @@ point[] intersectionpoints(circle c, line l)
 point[] intersectionpoints(line l, ellipse el)
 {/*<asyxml></code><documentation>Note that the line 'l' may be a segment by casting.
 	 intersectionpoints(ellipse, line) is also defined.</documentation></function></asyxml>*/
-	if(el.e == 0) return intersectionpoints(l, (circle)el);
-	if(degenerate(el)) return new point[]{intersectionpoint(l, el.l)};
+	if (el.e == 0) return intersectionpoints(l, (circle)el);
+	if (degenerate(el)) return new point[]{intersectionpoint(l, el.l)};
 	point[] op;
 	coordsys R = samecoordsys(l.A, el.C) ? l.A.coordsys : defaultcoordsys;
 	coordsys Rp = defaultcoordsys;
@@ -6563,7 +6552,7 @@ point[] intersectionpoints(line l, ellipse el)
 		// 'l' is a tangent of 'el'
 		transform t = scale(el.a/el.b, el.F1, el.F2, el.C, rotate(90, el.C) * el.F1);
 		point inter = inverse(t) * intersectionpoints(C, t * ll)[0];
-		if(inter @ l) op.push(inter);
+		if (inter @ l) op.push(inter);
 	} else {
 		coordsys Rc = canonicalcartesiansystem(el);
 		line ll = changecoordsys(Rc, l);
@@ -6571,7 +6560,7 @@ point[] intersectionpoints(line l, ellipse el)
 																	1/el.a^2, 0, 1/el.b^2, 0, 0, -1);
 		for (int i = 0; i < P.length; ++i) {
 			point inter = changecoordsys(R, point(Rc, P[i]));
-			if(inter @ l) op.push(inter);
+			if (inter @ l) op.push(inter);
 		}
 	}
 	return op;
@@ -6592,22 +6581,22 @@ point[] intersectionpoints(line l, parabola p)
 	line ll = changecoordsys(R, l),
 		lv = parallel(p.V, p.D);
 	point M = intersectionpoint(lv, ll), tgtp;
-	if(finite(M)) {// Test if 'l' is tangent to 'p'
+	if (finite(M)) {// Test if 'l' is tangent to 'p'
 		line l1 = bisector(line(M, p.F));
 		line l2 = rotate(90, M) * lv;
 		point P = intersectionpoint(l1, l2);
 		tgtp = rotate(180, P) * p.F;
 		tgt = (tgtp @ l);
 	}
-	if(tgt) {
-		if(tgtp @ l) op.push(tgtp);
+	if (tgt) {
+		if (tgtp @ l) op.push(tgtp);
 	} else {
 		real[] eq = changecoordsys(defaultcoordsys, equation(p)).a;
 		pair[] tp = intersectionpoints(locate(l.A), locate(l.B), eq);
 		point inter;
 		for (int i = 0; i < tp.length; ++i) {
 			inter = point(R, tp[i]/R);
-			if(inter @ l) op.push(inter);
+			if (inter @ l) op.push(inter);
 		}
 	}
 	return op;
@@ -6627,15 +6616,15 @@ point[] intersectionpoints(line l, hyperbola h)
 	point A = intersectionpoint(l, h.A1), B = intersectionpoint(l, h.A2);
 	point M = 0.5*(A + B);
 	bool tgt = Finite(M) ? M @ h : false;
-	if(tgt) {
-		if(M @ l) op.push(M);
+	if (tgt) {
+		if (M @ l) op.push(M);
 	} else {
 		real[] eq = changecoordsys(defaultcoordsys, equation(h)).a;
 		pair[] tp = intersectionpoints(locate(l.A), locate(l.B), eq);
 		point inter;
 		for (int i = 0; i < tp.length; ++i) {
 			inter = point(R, tp[i]/R);
-			if(inter @ l) op.push(inter);
+			if (inter @ l) op.push(inter);
 		}
 	}
 	return op;
@@ -6651,9 +6640,9 @@ point[] intersectionpoints(line l, conic co)
 {/*<asyxml></code><documentation>Note that the line 'l' may be a segment by casting.
 	 intersectionpoints(conic, line) is also defined.</documentation></function></asyxml>*/
 	point[] op;
-	if(co.e < 1) op = intersectionpoints((ellipse)co, l);
+	if (co.e < 1) op = intersectionpoints((ellipse)co, l);
 	else
-		if(co.e == 1) op = intersectionpoints((parabola)co, l);
+		if (co.e == 1) op = intersectionpoints((parabola)co, l);
 		else op = intersectionpoints((hyperbola)co, l);
 	return op;
 }
@@ -6673,7 +6662,7 @@ point[] intersectionpoints(bqe bqe1, bqe bqe2)
 	static real e=100 * sqrt(realEpsilon);
 	real[] x,y,c;
 	point[] P;
-	if(abs(a[0]-b[0]) > e || abs(a[1]-b[1]) > e || abs(a[2]-b[2]) > e) {
+	if (abs(a[0]-b[0]) > e || abs(a[1]-b[1]) > e || abs(a[2]-b[2]) > e) {
 		c=new real[] {a[0]*a[2]*(-2*b[0]*b[2]+b[1]^2)+a[0]^2*b[2]^2+a[2]^2*b[0]^2,
 
 									2*a[0]*a[2]*b[1]*b[4]-2*a[2]*a[3]*b[0]*b[2]
@@ -6691,7 +6680,7 @@ point[] intersectionpoints(bqe bqe1, bqe bqe2)
 									+a[2]^2*b[5]^2};
 		x=realquarticroots(c[0],c[1],c[2],c[3],c[4]);
 	} else {
-		if(abs(b[4]) > e) {
+		if (abs(b[4]) > e) {
 			real D=b[4]^2;
 			c=new real[] {(a[0]*b[4]^2+a[2]*b[3]^2+
 										 (-2*a[2]*a[3])*b[3]+a[2]*a[3]^2)/D,
@@ -6699,7 +6688,7 @@ point[] intersectionpoints(bqe bqe1, bqe bqe2)
 											(2*a[2]*a[5])*b[3])/D,a[2]*(a[5]-b[5])^2/D+a[5]};
 			x=quadraticroots(c[0],c[1],c[2]);
 		} else {
-			if(abs(a[3]-b[3]) > e) {
+			if (abs(a[3]-b[3]) > e) {
 				real D=b[3]-a[3];
 				c=new real[] {a[2],0,a[0]*(a[5]-b[5])^2/D^2-a[3]*b[5]/D+a[5]};
 				y=quadraticroots(c[0],c[1],c[2]);
@@ -6707,14 +6696,14 @@ point[] intersectionpoints(bqe bqe1, bqe bqe2)
 					c=new real[] {a[0],a[3],a[2]*y[i]^2+a[5]};
 					x=quadraticroots(c[0],c[1],c[2]);
 					for(int j=0; j < x.length; ++j) {
-						if(abs(b[0]*x[j]^2+b[1]*x[j]*y[i]+b[2]*y[i]^2+b[3]*x[j]
+						if (abs(b[0]*x[j]^2+b[1]*x[j]*y[i]+b[2]*y[i]^2+b[3]*x[j]
 									 +b[4]*y[i]+b[5]) < 1e-5)
 							P.push(changecoordsys(currentcoordsys,point(R,(x[j],y[i]))));
 					}
 				}
 				return P;
 			} else {
-				if(abs(a[5]-b[5]) < e)
+				if (abs(a[5]-b[5]) < e)
 					abort("intersectionpoints: intersection of identical conics.");
 			}
 		}
@@ -6723,7 +6712,7 @@ point[] intersectionpoints(bqe bqe1, bqe bqe2)
 		c=new real[] {a[2],0,a[0]*x[i]^2+a[3]*x[i]+a[5]};
 		y=quadraticroots(c[0],c[1],c[2]);
 		for(int j=0; j < y.length; ++j) {
-			if(abs(b[0]*x[i]^2+b[1]*x[i]*y[j]+b[2]*y[j]^2+b[3]*x[i]+b[4]*y[j]+b[5])
+			if (abs(b[0]*x[i]^2+b[1]*x[i]*y[j]+b[2]*y[j]^2+b[3]*x[i]+b[4]*y[j]+b[5])
 				 < 1e-5)
 				P.push(changecoordsys(currentcoordsys,point(R,(x[i],y[j]))));
 		}
@@ -6734,8 +6723,8 @@ point[] intersectionpoints(bqe bqe1, bqe bqe2)
 /*<asyxml><function type="point[]" signature="intersectionpoints(conic,conic)"><code></asyxml>*/
 point[] intersectionpoints(conic co1, conic co2)
 {/*<asyxml></code><documentation>Return the intersection points of the two conics.</documentation></function></asyxml>*/
-	if(degenerate(co1)) return intersectionpoints(co1.l[0], co2);
-	if(degenerate(co2)) return intersectionpoints(co1, co2.l[0]);
+	if (degenerate(co1)) return intersectionpoints(co1.l[0], co2);
+	if (degenerate(co2)) return intersectionpoints(co1, co2.l[0]);
 	return intersectionpoints(equation(co1), equation(co2));
 }
 
@@ -6744,19 +6733,19 @@ point[] intersectionpoints(triangle t, conic co, bool extended = false)
 {/*<asyxml></code><documentation>Return the intersection points.
 	 If 'extended' is true, the sides are lines else the sides are segments.
 	 intersectionpoints(conic, triangle, bool) is also defined.</documentation></function></asyxml>*/
-	if(degenerate(co)) return intersectionpoints(t, co.l[0], extended);
+	if (degenerate(co)) return intersectionpoints(t, co.l[0], extended);
 	point[] OP;
 	void addpoint(point P[])
 	{
 		for (int i = 0; i < P.length; ++i) {
-			if(defined(P[i])) {
+			if (defined(P[i])) {
 				bool exist = false;
 				for (int j = 0; j < OP.length; ++j) {
-					if(P[i] == OP[j]) {exist = true; break;}
+					if (P[i] == OP[j]) {exist = true; break;}
 				}
-				if(!exist) OP.push(P[i]);
+				if (!exist) OP.push(P[i]);
 			}}}
-	if(extended) {
+	if (extended) {
 		for (int i = 1; i <= 3; ++i) {
 			addpoint(intersectionpoints(t.line(i), co));
 		}
@@ -6776,15 +6765,15 @@ point[] intersectionpoints(conic co, triangle t, bool extended = false)
 /*<asyxml><function type="point[]" signature="intersectionpoints(ellipse,ellipse)"><code></asyxml>*/
 point[] intersectionpoints(ellipse a, ellipse b)
 {/*<asyxml></code><documentation></documentation></function></asyxml>*/
-	// if(degenerate(a)) return intersectionpoints(a.l, b);
-	// if(degenerate(b)) return intersectionpoints(a, b.l);;
+	// if (degenerate(a)) return intersectionpoints(a.l, b);
+	// if (degenerate(b)) return intersectionpoints(a, b.l);;
 	return intersectionpoints((conic)a, (conic)b);
 }
 /*<asyxml><function type="point[]" signature="intersectionpoints(ellipse,circle)"><code></asyxml>*/
 point[] intersectionpoints(ellipse a, circle b)
 {/*<asyxml></code><documentation></documentation></function></asyxml>*/
-	// if(degenerate(a)) return intersectionpoints(a.l, b);
-	// if(degenerate(b)) return intersectionpoints(a, b.l);;
+	// if (degenerate(a)) return intersectionpoints(a.l, b);
+	// if (degenerate(b)) return intersectionpoints(a, b.l);;
 	return intersectionpoints((conic)a, (conic)b);
 }
 /*<asyxml><function type="point[]" signature="intersectionpoints(circle,ellipse)"><code></asyxml>*/
@@ -6795,7 +6784,7 @@ point[] intersectionpoints(circle a, ellipse b)
 /*<asyxml><function type="point[]" signature="intersectionpoints(ellipse,parabola)"><code></asyxml>*/
 point[] intersectionpoints(ellipse a, parabola b)
 {/*<asyxml></code><documentation></documentation></function></asyxml>*/
-	// if(degenerate(a)) return intersectionpoints(a.l, b);
+	// if (degenerate(a)) return intersectionpoints(a.l, b);
 	return intersectionpoints((conic)a, (conic)b);
 }
 /*<asyxml><function type="point[]" signature="intersectionpoints(parabola,ellipse)"><code></asyxml>*/
@@ -6806,7 +6795,7 @@ point[] intersectionpoints(parabola a, ellipse b)
 /*<asyxml><function type="point[]" signature="intersectionpoints(ellipse,hyperbola)"><code></asyxml>*/
 point[] intersectionpoints(ellipse a, hyperbola b)
 {/*<asyxml></code><documentation></documentation></function></asyxml>*/
-	// if(degenerate(a)) return intersectionpoints(a.l, b);
+	// if (degenerate(a)) return intersectionpoints(a.l, b);
 	return intersectionpoints((conic)a, (conic)b);
 }
 /*<asyxml><function type="point[]" signature="intersectionpoints(hyperbola,ellipse)"><code></asyxml>*/
@@ -6860,10 +6849,10 @@ point[] intersectionpoints(hyperbola a, hyperbola b)
 /*<asyxml><function type="point[]" signature="intersectionpoints(circle,circle)"><code></asyxml>*/
 point[] intersectionpoints(circle c1, circle c2)
 {/*<asyxml></code><documentation></documentation></function></asyxml>*/
-	if(degenerate(c1))
+	if (degenerate(c1))
 		return degenerate(c2) ?
 			new point[]{intersectionpoint(c1.l, c2.l)} : intersectionpoints(c1.l, c2);
-	if(degenerate(c2)) return intersectionpoints(c1, c2.l);
+	if (degenerate(c2)) return intersectionpoints(c1, c2.l);
 	return (c1.C == c2.C) ?
 		new point[] :
 		intersectionpoints(radicalline(c1, c2), c1);
@@ -6872,7 +6861,7 @@ point[] intersectionpoints(circle c1, circle c2)
 /*<asyxml><function type="line" signature="tangent(circle,abscissa)"><code></asyxml>*/
 line tangent(circle c, abscissa x)
 {/*<asyxml></code><documentation>Return the tangent of 'c' at 'point(c, x)'.</documentation></function></asyxml>*/
-	if(c.r == 0) abort("tangent: a circle with a radius equals zero has no tangent.");
+	if (c.r == 0) abort("tangent: a circle with a radius equals zero has no tangent.");
 	point M = point(c, x);
 	return line(rotate(90, M) * c.C, M);
 }
@@ -6881,8 +6870,8 @@ line tangent(circle c, abscissa x)
 line[] tangents(circle c, point M)
 {/*<asyxml></code><documentation>Return the tangents of 'c' passing through 'M'.</documentation></function></asyxml>*/
 	line[] ol;
-	if(inside(c, M)) return ol;
-	if(M @ c) {
+	if (inside(c, M)) return ol;
+	if (M @ c) {
 		ol.push(tangent(c, relabscissa(c, M)));
 	} else {
 		circle cc = circle(c.C, M);
@@ -6936,8 +6925,8 @@ line tangent(ellipse el, abscissa x)
 line[] tangents(ellipse el, point M)
 {/*<asyxml></code><documentation>Return the tangents of 'el' passing through 'M'.</documentation></function></asyxml>*/
 	line[] ol;
-	if(inside(el, M)) return ol;
-	if(M @ el) {
+	if (inside(el, M)) return ol;
+	if (M @ el) {
 		ol.push(tangent(el, relabscissa(el, M)));
 	} else {
 		point Mp = samecoordsys(M, el.F2) ?
@@ -6959,7 +6948,7 @@ line tangent(parabola p, abscissa x)
 {/*<asyxml></code><documentation>Return the tangent of 'p' at 'point(p, x)' (use the Wells method).</documentation></function></asyxml>*/
 	line lt = rotate(90, p.V) * line(p.V, p.F);
 	point P = point(p, x);
-	if(P == p.V) return lt;
+	if (P == p.V) return lt;
 	point M = midpoint(segment(P, p.F));
 	line l = rotate(90, M) * line(P, p.F);
 	return line(P, projection(lt) * M);
@@ -6969,8 +6958,8 @@ line tangent(parabola p, abscissa x)
 line[] tangents(parabola p, point M)
 {/*<asyxml></code><documentation>Return the tangent of 'p' at 'M' (use the Wells method).</documentation></function></asyxml>*/
 	line[] ol;
-	if(inside(p, M)) return ol;
-	if(M @ p) {
+	if (inside(p, M)) return ol;
+	if (M @ p) {
 		ol.push(tangent(p, angabscissa(p, M)));
 	}
 	else {
@@ -6995,7 +6984,7 @@ line tangent(hyperbola h, abscissa x)
 {/*<asyxml></code><documentation>Return the tangent of 'h' at 'point(p, x)'.</documentation></function></asyxml>*/
 	point M = point(h, x);
 	line ol = bisector(line(M, h.F1), line(M, h.F2));
-	if(sameside(h.F1, h.F2, ol) || ol == line(h.F1, h.F2)) ol = rotate(90, M) * ol;
+	if (sameside(h.F1, h.F2, ol) || ol == line(h.F1, h.F2)) ol = rotate(90, M) * ol;
 	return ol;
 }
 
@@ -7003,7 +6992,7 @@ line tangent(hyperbola h, abscissa x)
 line[] tangents(hyperbola h, point M)
 {/*<asyxml></code><documentation>Return the tangent of 'h' at 'M'.</documentation></function></asyxml>*/
 	line[] ol;
-	if(M @ h) {
+	if (M @ h) {
 		ol.push(tangent(h, angabscissa(h, M, fromCenter)));
 	} else {
 		coordsys cano = canonicalcartesiansystem(h);
@@ -7011,7 +7000,7 @@ line[] tangents(hyperbola h, point M)
 		real a = abs(1/(bqe.a[5] * bqe.a[0])), b = abs(1/(bqe.a[5] * bqe.a[2]));
 		point Mp = changecoordsys(cano, M);
 		real x0 = Mp.x, y0 = Mp.y;
-		if(abs(x0) > epsgeo) {
+		if (abs(x0) > epsgeo) {
 			real c0 = a * y0^2/(b * x0)^2 - 1/b,
 				c1 = 2 * a * y0/(b * x0^2), c2 = a/x0^2 - 1;
 			real[] sol = quadraticroots(c0, c1, c2);
@@ -7019,7 +7008,7 @@ line[] tangents(hyperbola h, point M)
 				point tmp = changecoordsys(coordsys(h), point(cano, (a * (1 + y * y0/b)/x0, y)));
 				ol.push(line(M, tmp));
 			}
-		} else if(abs(y0) > epsgeo) {
+		} else if (abs(y0) > epsgeo) {
 			real y = -b/y0, x = sqrt(a * (1 + b/y0^2));
 			ol.push(line(M, changecoordsys(coordsys(h), point(cano, (x, y)))));
 			ol.push(line(M, changecoordsys(coordsys(h), point(cano, (-x, y)))));
@@ -7033,7 +7022,7 @@ point[] intersectionpoints(conic co, arc a)
 	point[] op;
 	point[] tp = intersectionpoints(co, (conic)a.el);
 	for (int i = 0; i < tp.length; ++i)
-		if(tp[i] @ a) op.push(tp[i]);
+		if (tp[i] @ a) op.push(tp[i]);
 	return op;
 }
 
@@ -7048,7 +7037,7 @@ point[] intersectionpoints(arc a1, arc a2)
 	point[] op;
 	point[] tp = intersectionpoints(a1.el, a2.el);
 	for (int i = 0; i < tp.length; ++i)
-		if(tp[i] @ a1 && tp[i] @ a2) op.push(tp[i]);
+		if (tp[i] @ a1 && tp[i] @ a2) op.push(tp[i]);
 	return op;
 }
 
@@ -7059,7 +7048,7 @@ point[] intersectionpoints(line l, arc a)
 	point[] op;
 	point[] tp = intersectionpoints(a.el, l);
 	for (int i = 0; i < tp.length; ++i)
-		if(tp[i] @ a && tp[i] @ l) op.push(tp[i]);
+		if (tp[i] @ a && tp[i] @ l) op.push(tp[i]);
 	return op;
 }
 
@@ -7185,7 +7174,7 @@ path compassmark(pair O, pair A, real position, real angle = 10)
 	real t1 = intersect(unitcircle, (0, 0)--2 * dir(pa))[0];
 	real t2 = intersect(unitcircle, (0, 0)--2 * dir(pb))[0];
 	int n = length(unitcircle);
-	if(t1 >= t2) t1 -= n;
+	if (t1 >= t2) t1 -= n;
 	return shift(O) * scale(abs(O - A)) * subpath(unitcircle, t1, t2);
 }
 
@@ -7217,8 +7206,8 @@ path square(pair z1, pair z2)
 // Draw a perpendicular symbol at z aligned in the direction align
 // relative to the path z--z + dir.
 void perpendicular(picture pic = currentpicture, pair z, pair align,
-									 pair dir = E, real size = 0, pen p = currentpen,
-									 margin margin = NoMargin, filltype filltype = NoFill)
+					 pair dir = E, real size = 0, pen p = currentpen,
+					 margin margin = NoMargin, filltype filltype = NoFill)
 {
 	perpendicularmark(pic, (point) z, align, dir, size, p, margin, filltype);
 }
@@ -7227,8 +7216,8 @@ void perpendicular(picture pic = currentpicture, pair z, pair align,
 // Draw a perpendicular symbol at z aligned in the direction align
 // relative to the path z--z + dir(g, 0)
 void perpendicular(picture pic = currentpicture, pair z, pair align, path g,
-									 real size = 0, pen p = currentpen, margin margin = NoMargin,
-									 filltype filltype = NoFill)
+					 real size = 0, pen p = currentpen, margin margin = NoMargin,
+					 filltype filltype = NoFill)
 {
 	perpendicularmark(pic, (point) z, align, dir(g, 0), size, p, margin, filltype);
 }
