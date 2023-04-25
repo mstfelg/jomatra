@@ -1,23 +1,23 @@
-Circ PPP(pair A, pair B, pair C) { return Circ(A,B,C); }
+circle PPP(point A, point B, point C) { return circle(A,B,C); }
 
-Circ LLL(pair A, pair B, pair C, int n=0) {
-	pair bis_B = bisect(A,B,C)[nthBit(n,0)];
-	pair bis_C = bisect(A,C,B)[nthBit(n,1)];
-	pair I = cut(B,bis_B, C,bis_C);
+circle LLL(point A, point B, point C, int n=0) {
+	point bis_B = bisect(A,B,C)[nthBit(n,0)];
+	point bis_C = bisect(A,C,B)[nthBit(n,1)];
+	point I = cut(B,bis_B, C,bis_C);
 	real r = dis(I,B,C);
-	return Circ(I,r);
+	return circle(I,r);
 }
 
-Circ LPP(pair lp, pair lq, pair A, pair B, int n=0) {
+circle LPP(point lp, point lq, point A, point B, int n=0) {
 	if (lp == lq)
-		return Circ(lp,A,B);
+		return circle(lp,A,B);
 	if (are_parallel(lp,lq,A,B)) {
-		pair[] bis = bisect(B,A);
-		pair T = cut(bis[0], bis[1], lp, lq);
-		return Circ(T,A,B);
+		point[] bis = bisect(B,A);
+		point T = cut(bis[0], bis[1], lp, lq);
+		return circle(T,A,B);
 	}
-	pair P = cut(lp,lq,A,B);
+	point P = cut(lp,lq,A,B);
 	real ir = sqrt(dis(P,A)*dis(P,B));
-	pair T = P+nthSgn(n,0)*ir*unit(P-lp);
-	return Circ(T,A,B);
+	point T = P+nthSgn(n,0)*ir*unit(P-lp);
+	return circle(T,A,B);
 }

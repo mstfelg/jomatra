@@ -1,7 +1,3 @@
-void draw(Circ c) {
-	draw(circle(c.O, c.r));
-}
-
 void draw(pair[] gon ... Label[] labels) {
 	path p;
 	for (int i = 0; i < gon.length; ++i)

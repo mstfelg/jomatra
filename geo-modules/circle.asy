@@ -7,24 +7,10 @@ path carc(pair O, real r, real alpha) {
 	return carc(O, r, 0, alpha);
 }
 path carc(circle c, real alpha, real beta) {
-	return arc(c.O, c.r, degrees(alpha), degrees(beta));
+	return arc(c.C, c.r, degrees(alpha), degrees(beta));
 }
 path carc(circle c, real alpha) {
 	return carc(c, 0, alpha);
-}
-
-circle Circ(pair A, pair B) { return Circ(A, abs(B-A)); }
-circle Circ(pair A, pair B, pair C) {
-	return circle(circumcenter(A,B,C),circumradius(A,B,C));
-}
-circle incircle(pair A, pair B, pair C) {
-	return circle(incenter(A,B,C),inradius(A,B,C));
-}
-circle excircle(pair A, pair B, pair C) {
-	return circle(excenter(A,B,C),exradius(A,B,C));
-}
-circle Circ(pair A, pair B, pair C) {
-	return circle(circumcenter(A,B,C),circumradius(A,B,C));
 }
 
 bool are_cyclic(pair A, pair B, pair C, pair D) {
