@@ -3152,30 +3152,50 @@ circle circle(explicit point C, real r)
 	return oc;
 }
 
+// Degenerate circle cases
+circle operator cast(point P)
+{
+	return circle(P, 0);
+}
+point operator cast(circle c)
+{
+	return c.O;
+}
+
 /*<asyxml><function type="circle" signature="circle(point,point)"><code></asyxml>*/
-circle circle(point A, point B)
+circle circle(point O, point A)
+{
+	return circle(O, abs(O-A));
+}
+
+circle circle_d(point A, point B)
 {/*<asyxml></code><documentation>Return the circle of diameter AB.</documentation></function></asyxml>*/
-	real r;
-	circle oc;
 	real a = abs(A), b = abs(B);
 	if (finite(a) && finite(b)) {
-		oc = circle((A + B)/2, abs(A - B)/2);
-	} else {
-		oc.r = infinity;
-		if (finite(abs(A))) oc.l = line(A, A + unit(B));
-		else {
-			if (finite(abs(B))) oc.l = line(B, B + unit(A));
-			else if (finite(abs(A - B)/2)) oc = circle((A + B)/2, abs(A - B)/2); else
-				oc.l = line(A, B);
-		}
+		return circle((A + B)/2, A);
 	}
+	circle oc;
+	oc.r = infinity;
+	if (finite(abs(A))) {
+		oc.l = line(A, A + unit(B));
+		return oc;
+	}
+	if (finite(abs(B))) {
+		oc.l = line(B, B + unit(A));
+		return oc;
+	}
+	if (finite(abs(A - B)/2)) {
+		oc = circle((A + B)/2, abs(A - B)/2);
+		return oc;
+	}
+	oc.l = line(A, B);
 	return oc;
 }
 
 /*<asyxml><function type="circle" signature="circle(segment)"><code></asyxml>*/
-circle circle(segment s)
+circle circle_d(segment s)
 {/*<asyxml></code><documentation>Return the circle of diameter 's'.</documentation></function></asyxml>*/
-	return circle(s.A, s.B);
+	return circle_d(s.A, s.B);
 }
 
 /*<asyxml><function type="point" signature="circumcenter(point,point,point)"><code></asyxml>*/
