@@ -101,7 +101,7 @@ pair midline(pair A, pair B, pair C, pair D) {
 		return (A+B+C+D)/4;
 	pair P = (A+B)/2;
 	pair Q = (C+D)/2;
-	pair R = cut(A,B, C,D);
+	pair R = extension(A,B, C,D);
 	real a = dis(R,P);
 	real b = dis(R,Q);
 	return a*Q/(a+b) + b*P/(a+b);
