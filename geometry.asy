@@ -6990,31 +6990,6 @@ point[] intersectionpoints(circle c1, circle c2)
 	return dirtangent(D, c1);
 }
 
-// Aliases for intersectionpoints
-pair[] cut(point A, point B, circle c)
-{
-	return intersectionpoints(line(A,B), c);
-}
-
-pair[] cut(circle c, point A, point B)
-{
-	return intersectionpoints(line(A,B), c);
-}
-
-pair[] cut(circle c, circle d) {
-	return intersectionpoints(c, d);
-}
-
-pair[] cut(circle c, line l) {
-	return intersectionpoints(l, c);
-}
-
-pair cut(point A, point B, point C, point D) {
-	if (are_parallel(A,B,C,D))
-		return point((A+B+C+D)/4, angle(B-A));
-	return extension(A,B,C,D);
-}
-
 /*<asyxml><function type="line" signature="tangent(circle,abscissa)"><code></asyxml>*/
 line tangent(circle c, abscissa x)
 {/*<asyxml></code><documentation>Return the tangent of 'c' at 'point(c, x)'.</documentation></function></asyxml>*/
