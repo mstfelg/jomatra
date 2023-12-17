@@ -171,6 +171,25 @@ pair arc_symparam(pair A, pair B, real t=0, pair O=(0,0))
 	return rot(ang*t,O) * C;
 }
 
+// Given an arc AB on a circle centered at O, return -1 if C is on minor arc
+// AB, return 1 if C is on major arc, and 0 otherwise.
+int arc_ratio_sign(pair C, pair A, pair B, pair O=(0,0))
+{
+	pair AA = unit(A-O);
+	pair BB = unit(B-O);
+	pair CC = unit(C-O);
+
+	if (CC == AA || CC == BB)
+		return 0;
+
+	// Non-linear parametrization of circle to intervals:
+	// minor arc (BA) to (-infty, 0) and major arc (AB) to (0, infty).
+	pair T = (CC-AA)/(CC-BB) * sqrt(BB/AA);
+	if (xpart(T) > 0)
+		return -1;
+	return 1;
+}
+
 pair mid_arc(pair A, pair B, pair O=(0,0))
 {
 	return arc_param(A,B,O);
@@ -388,6 +407,7 @@ pair[] polyline_rot_rel(pair O, pair A ... pair[] walk)
 	}
 	return gon;
 }
+
 
 pair[] square(pair A, pair B)
 {
