@@ -1,4 +1,4 @@
-import geometry;
+include geometry;
 
 // Style
 size(4cm);
@@ -95,6 +95,68 @@ real ratio(pair P, pair A, pair B)
 	return length(tf);
 }
 
+// Barycentric coordinates
+point bary(point A, point B, point C, real x, real y, real z) {
+	real k = x+y+z;
+	x /= k;
+	y /= k;
+	z /= k;
+	return x*A + y*B + z*C;
+}
+
+real[] angles_sss(real a, real b, real c) {
+	real alpha = acos((b*b+c*c-a*a)/(2*b*c));
+	real beta = acos((c*c+a*a-b*b)/(2*c*a));
+	real gamma = pi-alpha-beta;
+	return new real[] {alpha, beta, gamma};
+}
+
+real[] angles_sss(point A, point B, point C) {
+	return angles_sss(abs(B-C), abs(C-A), abs(A-B));
+}
+
+point bary(point A, point B, point C, real f(real, real, real)) {
+	real[] angles = angles_sss(A,B,C);
+	real aa = angles[0];
+	real bb = angles[1];
+	real cc = angles[2];
+	real x = f(aa, bb, cc);
+	real y = f(bb, cc, aa);
+	real z = f(cc, aa, bb);
+	real k = x+y+z;
+	x /= k;
+	y /= k;
+	z /= k;
+	return x*A + y*B + z*C;
+}
+
+real circumradius(real a, real b, real c) {
+	return a*b*c/sqrt((a+b+c)*(-a+b+c)*(a-b+c)*(a+b-c));
+}
+
+real circumradius(point A, point B, point C) {
+	return circumradius(abs(B-C), abs(C-A), abs(A-B));
+}
+
+// symbolic
+bool are_concurrent(pair A, pair B, pair C, pair D, pair E, pair F) {
+	return (extension(A,B,C,D) == (infinity,infinity) // parallel case
+		 && (infinity,infinity)==extension(C,D,E,F))
+		 || (abs(extension(A,B,C,D).x-extension(C,D,E,F).x) < 1/10^(5)
+		 && abs(extension(A,B,C,D).y-extension(C,D,E,F).y) < 1/10^(5)
+		 );
+}
+
+bool are_collinear(pair A, pair B, pair C) {
+	return A == B || B == C || C == A
+			|| abs(unit(C-A)-unit(A-B)) < 1/10^5
+			|| abs(unit(B-A)+unit(C-A)) < 1/10^5;
+}
+
+bool are_parallel(pair A, pair B, pair C, pair D) {
+	return collinear(B-A, D-C);
+}
+
 // Orthogonality
 pair perp(pair A, pair B, pair O=(0,0))
 {
@@ -115,8 +177,8 @@ real dis(pair A, pair B, pair C)
 
 pair midline(pair A, pair B, pair C, pair D)
 {
-	if (are_parallel(A,B,C,D))
-		return (A+B+C+D)/4;
+	//if (are_parallel(A,B,C,D))
+		//return (A+B+C+D)/4;
 	pair P = (A+B)/2;
 	pair Q = (C+D)/2;
 	pair R = extension(A,B, C,D);
